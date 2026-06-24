@@ -1,0 +1,23 @@
+PARSER_BEGIN(ChapterBookParser)
+package cb.javacc;
+
+import java.io.*;
+
+public class ChapterBookParser {
+  public static void main(String[] args) throws ParseException {
+    String someInput = "a";
+    StringReader sr = new StringReader(someInput);
+    Reader r = new BufferedReader(sr);
+    ChapterBookParser parser = new ChapterBookParser(r);
+    parser.A();
+  }
+}
+PARSER_END(ChapterBookParser)
+TOKEN : 
+{
+  <A : "a">
+}
+void A() : {} 
+{
+  <A> {System.out.println("Found an 'a' character.");}
+}

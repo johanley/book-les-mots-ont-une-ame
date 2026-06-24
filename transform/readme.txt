@@ -1,0 +1,1 @@
+Transform the raw input text into PostScript data structures (dictionaries).

@@ -1,0 +1,73 @@
+%!PS
+
+% Single page to test the rendering of all visible characters in windows-1252, with a given font.
+% This .ps file itself has windows-1252 encoding.
+
+% Ghostscript command:
+%   C:\ghostscript\gs10.04.0\bin\gswin64c.exe -dNOSAFER -sDEVICE=pdfwrite -o TEST-ENCODING.PDF TEST-ENCODING.PS
+% My GS_FONTPATH includes: 
+%  C:\Users\Owner\AppData\Local\Microsoft\Windows\Fonts
+
+(using.ps) run
+(base.ps) using
+(fonts.ps) using
+
+/inch {72 mul} bind def
+/width  6.875 inch def 
+/height 10.75 inch def
+
+<< /PageSize [width height] >> setpagedevice  
+<< /NeverEmbed [ ] >> setdistillerparams  % always embed fonts
+true setstrokeadjust  % minimizes off-by-one-pixel line issues
+
+/MyRegular /ACaslonPro-Regular windowize  % ok
+% /MyRegular /ACaslonPro-Italic windowize % ok
+% /MyRegular /Consolas windowize          % fails, and I don't know why. Font type matters here?
+
+<< 
+  (regular) /MyRegular
+>>
+12 % default font size 
+init-my-fonts
+
+
+  (regular) 100 use-font  
+  width 5 pct 0 translate % move the origin a bit to the right
+  
+  0 height 90 pct moveto 
+  (Test all visible characters in windows-1252.) show
+  
+  0 height 85 pct moveto
+  (! " # $ % & ' \( \) * + , - . /) show
+  0 height 80 pct moveto
+  (0 1 2 3 4 5 6 7 8 9 : ; < = > ?) show
+  0 height 75 pct moveto
+  (@ A B C D E F G H I J K L M N O) show
+  0 height 70 pct moveto
+  (P Q R S T U V W X Y Z [ \\ ] ^ _) show  % need to quote the backslash!
+  0 height 65 pct moveto
+  (` a b c d e f g h i j k l m n o) show
+  0 height 60 pct moveto
+  (p q r s t u v w x y z { | } ~) show
+  0 height 55 pct moveto
+  (€ ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ Ž) show
+  0 height 50 pct moveto
+  (‘ ’ “ ” • – — ˜ ™ š › œ ž Ÿ) show
+  0 height 45 pct moveto
+  (¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ ® ¯) show
+  0 height 40 pct moveto
+  (° ± ² ³ ´ µ ¶ · ¸ ¹ º » ¼ ½ ¾ ¿) show
+  0 height 35 pct moveto
+  (À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï) show
+  0 height 30 pct moveto
+  (Ð Ñ Ò Ó Ô Õ Ö × Ø Ù Ú Û Ü Ý Þ ß) show
+  0 height 25 pct moveto
+  (à á â ã ä å æ ç è é ê ë ì í î ï) show
+  0 height 20 pct moveto
+  (ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ) show
+  
+  0 height 10 pct moveto
+  (The font is Adobe Caslon Pro.) show
+  
+ 
+showpage
