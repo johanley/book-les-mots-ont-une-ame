@@ -2,6 +2,9 @@
 
 % The body of the book. The cover is a separate PDF.
 
+% Ghostscript command:
+%   C:\ghostscript\gs10.04.0\bin\gswin64c.exe -dNOSAFER -sDEVICE=pdfwrite -o BOOK.PDF BOOK.PS
+
 (using.ps) run
 (base.ps) using
 (debug.ps) using
@@ -13,91 +16,65 @@
 % int 
 % arg is the number of times /showpage has been called: 0, 1,...
 % See /BeginPage of setpagedevice below.
-% Sets the asymmetric work-box (sensitive to the page parity)
+%
+% Sets the asymmetric work-box (sensitive to the page parity): translate to origin, wd, ht.
+% Emit page numbers and the book's title.
+% Moves the currentpoint to the top left of the work-box.
 /start-new-page {
-  /idx defi
-  (Starting new page...) here
-  /page-num idx 3 sub def
-  % WARNING: there are two hard-coded transition points for the page numbers
-  page-num 1 ge  page-num 178 le and {
-    % show page numbers and title
-    % set the work-box; asymmetry in x, to avoid the spine 
-    bleed  MARGIN-X  add  SPINE-AVOIDANCE page-num 2 mod 0 eq {neg} if add 
-    bleed  MARGIN-Y  add
-    translate % to the bottom left of the work-box
-    
-    (regular) 90 use-font
-    /GAP ht 5 pct def
-    %/GAP ht 4.5 pct def
-    small-caps-font
-    /page-num-str page-num 4 string cvs def
-    page-num 2 mod 0 eq {
-      % left-hand page
-      0 ht moveto 
-      0 GAP rmoveto 
-      page-num-str show
+  [/idx] {
+    (Starting new page...) here
+    /page-num idx 3 sub def
+    % WARNING: there are two hard-coded transition points for the page numbers
+    page-num 1 ge  page-num 178 le and {
+      % show page numbers and title
+      % set the work-box; asymmetry in x, to avoid the spine 
+      bleed  MARGIN-X  add  SPINE-AVOIDANCE page-num 2 mod 0 eq {neg} if add 
+      bleed  MARGIN-Y  add
+      translate % to the bottom left of the work-box
+      
+      % first show the page number
+      (regular) 90 use-font
+      /GAP ht 5 pct def
+      small-caps-font
+      /page-num-str page-num 4 string cvs def
+      page-num 2 mod 0 eq {
+        % left-hand page
+        0 ht moveto 
+        0 GAP rmoveto 
+        page-num-str show
+      } {
+        % right-hand page
+        wd ht moveto 
+        0 GAP rmoveto 
+        page-num-str show-right-align
+      } ifelse
+      % now show the text
+      wd 50 pct  ht GAP add  moveto 
+      page-num 168 le {TITLE}{INDEX-TITLE}ifelse str-upper-case show-ctr-x
+      (regular) 100 use-font
     } {
-      % right-hand page
-      wd ht moveto 
-      0 GAP rmoveto 
-      page-num-str show-right-align
-    } ifelse
-    wd 50 pct  ht GAP add  moveto 
-    page-num 168 le {TITLE}{INDEX-TITLE}ifelse str-upper-case show-ctr-x
-    (regular) 100 use-font
-  } {
-    % no page numbers, and the centering is a bit different
-    % set the work-box using only the trimmed page, with no margins
-    bleed  bleed  translate % to the bottom left of the work-box
-  }
-  ifelse
-  
-  0 ht moveto % the top-left of the work-box, as a default currentposition
-  %0 0 wd ht rectstroke % to see the work-box
+      % no page numbers appear, and the centering is a bit different
+      % set the work-box using only the trimmed page, with no margins
+      bleed  bleed  translate % to the bottom left of the work-box
+    }
+    ifelse
+    
+    0 ht moveto % the top-left of the work-box, as a default currentposition
+    % 0 0 wd ht rectstroke % to see the work-box
+  } def-tmp
 } bind def
 
-% cx cy str 
-% Show text centered horizontally at the currentpoint, using /ashow.
+% ax ay str 
+% Show text centered horizontally at the currentpoint, using /ashow to adjust letter spacing by ax, ay.
 /ashow-ctr-x {
-  dup text-dim pop % text dx
-  -2 div % text -dx/2
-  0 rmoveto % text
+  dup text-dim pop % ax ay text dx
+  -2 div % ax ay text -dx/2
+  0 rmoveto % ax ay text
   ashow
 } bind def
 
-% width (name-of-file) px-width px-height
-% Show a color .jpg image file, with its bottom left at the current origin.
-% This proc uses the recommended style of using a unit square as an intermediate geometry.
-%
-% Ghostscript needs the -dNOSAFER option for this to operate correctly.
-%   [w 0 0 h 0 0]  - scan L to R and B to T
-%   [w 0 0 -h 0 h] - scan L to R and T to B (JPEG's apparently use this style)
-% /show-jpg {
-  % [/width /file-name /px-w /px-h] { 
-    % gsave
-      % % rescale the unit square to the given width,
-      % % while preserving the aspect ratio of the image
-      % width 
-      % width px-h px-w div mul  
-      % scale 
-      % /DeviceRGB setcolorspace
-      % <<
-       % /ImageType 1 % opaque
-       % /Width px-w
-       % /Height px-h
-       % /BitsPerComponent 8  % not BPP!; BPP = 8 bits/component * 3 components = BPP 24, for typical color JPEGs
-       % /Decode [0 1 0 1 0 1]  % standard, fixed
-       % /ImageMatrix [px-w 0 0 px-h neg 0 px-h] % transform array; maps FROM the unit square TO the underlying image geometry
-       % % opens the file and reads in the image data; this filter is specific to JPEG files:
-       % /DataSource file-name (r) file /DCTDecode filter  
-      % >>
-      % image 
-    % grestore
-  % } def-tmp 
-% } bind def
-
 % dict
-% The dict has author, title, and body (an array).
+% The dict has author, title, and body (usually an array).
 % Show a quotation, but first test to see if a new page is needed.
 % The policy is that quotations are never split by a page-break.
 /show-quotation-on-1-page {
@@ -111,7 +88,7 @@
 } bind def
 
 % dict
-% The dict has author, title, and body (an array).
+% The dict has author, title, and body (usually an array).
 /quotation-fits-on-page? {
   % use the null device, with a gsave-grestore.
   % no marks are made on the page using this technique
@@ -129,7 +106,7 @@
 } bind def
 
 % dict
-% The dict has author, title, and body (an array).
+% The dict has author, title, and body (usually an array).
 /show-quotation {
   3 dict begin
     {def} forall
@@ -186,6 +163,7 @@
   str-trim length 0 gt
 } bind def
 
+% THIS IS ALREADY IN STRING.PS.
 % str
 % Return the dx of the string (assumes dy is 0).
 /str-width { stringwidth pop } bind def
@@ -231,23 +209,8 @@
   % we need to interrogate the y-position at this point, for page breaks
 } bind def
 
-% Regular font.
-/R { (regular) 100 use-font } bind def
 
-% Italic font.
-/I { (italic) 100 use-font } bind def
-
-/NEW-LINE {
-  0 
-  currentpoint exch pop leading sub 
-  moveto
-} bind def
-
-/NEW-PAGE {
-  showpage 
-  % set-new-page will also be invoked
-} bind def
-
+% THIS SHOULD USE A TEMP DICT
 % str (filename)
 /process-quotes-file-one-line-at-a-time {
   % open the file read-only; its encoding should be 8859-1.
@@ -309,6 +272,7 @@
   end
 } bind def
 
+% THIS SHOULD USE A TEMP DICT
 % str (filename)
 /process-index-file-one-line-at-a-time {
   % open the file read-only; its encoding should be 8859-1.
@@ -367,6 +331,134 @@
   } def-tmp
 } bind def
 
+
+
+
+
+
+% [{...}]  an array of procs
+% THIS IS AN IMPORTANT PROC. IT APPLIES THE TYPESETTING INFORMATION.
+% Each proc does some typesetting operation: managing the font and the currentpoint.
+/TYPESET {
+  { exec } forall
+} bind def
+
+% Regular font.
+/R { (regular) 100 use-font } bind def
+
+% Italic font.
+/I { (italic) 100 use-font } bind def
+
+% The current y-position.
+/current-y {
+  currentpoint exch pop % y
+} bind def
+
+% The current x-position.
+/current-x {
+  currentpoint pop % x
+} bind def
+
+% Move the currentpoint to the left, and down by the LEADING.
+% Forces a NEW-PAGE if the new y-value is less than 0.
+/NEW-LINE {
+  current-y LEADING gt {
+    0 
+    current-y LEADING sub 
+    moveto
+  }
+  { NEW-PAGE }
+  ifelse 
+} bind def
+
+% Just calls showpage.
+% See set-new-page, and /BeginPage of setpagedevice below.
+/NEW-PAGE {
+  showpage 
+  % set-new-page will also be invoked
+} bind def
+
+% str (the title of the chapter).
+% The caller might want to coerce the text to upper case.
+% A new section of the book: chapter, short story.
+% New page, with the title of the chapter.
+% Moves the currentpoint about halfway down the page.
+/NEW-CHAPTER {
+  dup here
+  NEW-PAGE
+  wd 50 pct ht 70 pct moveto 
+  (regular) 200 use-font  
+  show-ctr-x % the title (the caller controls upper/lower case)
+  0 ht 60 pct moveto % no indentation!
+} bind def
+
+% New-line, and indent a little bit.
+/NEW-PARA {
+  NEW-LINE
+  2 INDENT
+} bind def
+
+% int
+% Move to the right by the given multiple of em's.
+/INDENT {
+  em 0 rmoveto
+} bind def
+
+% Can force a NEW-PAGE.
+/BLANK-LINE {
+  current-y LEADING 2 mul gt {
+    NEW-LINE NEW-LINE
+  } 
+  { NEW-PAGE } 
+  ifelse 
+} bind def
+
+% str
+% Regular text flow, using the current font.
+% Can force a NEW-PAGE. 
+/PROSE {
+  [/str] {
+    % chop the string into [str], an array of words, separating on whitespace
+    str str-words {
+      /word defi
+      word str-width /word-wd defi
+      /new-x current-x word-wd add def
+      /line-overflow new-x wd sub def
+      line-overflow  word-wd 2 div  gt { NEW-LINE } if
+      word SPACE str-concat show
+    } forall
+  } def-tmp
+} bind def
+
+% [()] an array of strings; one string is one line of the stanza.
+%
+% A stanza of poetry, kept-together on one page.
+% ASSUMES: the lines aren't 'too long' for the page width.
+% ASSUMES: there's no more than about 8 lines, such that the whole can be kept-together on one page.
+% The lines are rendederd in the current font.
+/STANZA {
+  [/lines] {
+    % compute the final y-value, to see if it will fit on the current page
+    % y - (num-lines + 1) * leading > 0
+    current-y  lines length 1 add   LEADING mul  sub 
+    0 gt { 
+      BLANK-LINE
+    } { 
+      NEW-PAGE % initial blank line not needed
+    }
+    ifelse 
+    lines {
+      3 INDENT show NEW-LINE
+    } forall
+    NEW-LINE % gives a blank line at the end
+ } def-tmp
+} bind def
+
+% str
+% centered, one-line text; slightly larger font; blank lines before and after?
+/SECTION {} bind def
+
+
 /inch {72 mul} bind def
 /8th-inch {72 mul 8 div} bind def
 
@@ -381,12 +473,14 @@
   /page-width  trim-width bleed 2 mul add  def 
   /page-height  trim-height bleed 2 mul add  def 
   /ASPECT-RATIO trim-height trim-width div def % > 1.0 in this project
+  
   /MARGIN-X 7 8th-inch def 
   /MARGIN-Y 6 8th-inch def 
   % wd and ht are for the work-box for the main content (pages with page numbers).
   /wd trim-width MARGIN-X 2 mul sub def   
   /ht trim-height MARGIN-Y 2 mul sub def   
   /SPINE-AVOIDANCE 1.5 8th-inch def
+  
   <<
     /PageSize [page-width  page-height]
     /BeginPage {start-new-page}  
@@ -404,8 +498,9 @@
   >>
   11 % default font size 
   init-my-fonts
+  
   % My model: "Jerusalem" by Simon Montefiore (Knopf, 2011)
-  /leading 1.2 11 mul def % this is a common leading, 120% of the type size
+  /LEADING 1.2 11 mul def % this is a common leading, 120% of the type size
   
   /TITLE (Les Mots Ont Une Âme) def
   /AUTHOR (Guy de Maupassant) def
@@ -483,18 +578,59 @@ showpage
   % <</author (Aeschylus) /title (Prometheus Bound) /body [/R(More leisure than I wish is mine.)]>>
   % <</author (Christopher Alexander) /title (The Nature of Order, Book 1) /body [/R(For twenty years, I spent two or three hours a day looking at pairs of things, comparing them, and asking myself:) /I(Which has more life?)]>>
 
-
-showpage
-
-showpage
-
+[
+  {(LE RETOUR) NEW-CHAPTER} 
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {NEW-PARA}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {NEW-PARA}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {NEW-PARA}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {NEW-PARA}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {NEW-PARA}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {NEW-PARA}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {NEW-PARA}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R [(Upon the beach breathe I the air) (And cast adrift this quiet prayer.) (Where ends the Earth and starts the sea,) (There will my heart remember thee.)]  STANZA}
+] TYPESET
 
 % WARNING: YOU MAY HAVE ADD EMPTY PAGES HERE MANUALLY. 
 % SOME PRINTING SERVICES REQUIRE THE NUMBER OF PAGES TO BE AN EVEN MULTIPLE OF 2 or 4.
 % (I could add code to do this automatically.)
 % Lulu.com: pages div by 4; end with 2 blank pages.
 % 178 + 3 = 181; increase to 184, add 3 blank pages.
-showpage
 showpage
 
 
