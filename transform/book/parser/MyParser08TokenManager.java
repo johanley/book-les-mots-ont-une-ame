@@ -14,35 +14,6 @@ public class MyParser08TokenManager implements MyParser08Constants {
 private final int jjStopStringLiteralDfa_0(int pos, long active0){
    switch (pos)
    {
-      case 0:
-         if ((active0 & 0x10L) != 0L)
-         {
-            jjmatchedKind = 7;
-            return -1;
-         }
-         return -1;
-      case 1:
-         if ((active0 & 0x10L) != 0L)
-         {
-            if (jjmatchedPos == 0)
-            {
-               jjmatchedKind = 7;
-               jjmatchedPos = 0;
-            }
-            return -1;
-         }
-         return -1;
-      case 2:
-         if ((active0 & 0x10L) != 0L)
-         {
-            if (jjmatchedPos == 0)
-            {
-               jjmatchedKind = 7;
-               jjmatchedPos = 0;
-            }
-            return -1;
-         }
-         return -1;
       default :
          return -1;
    }
@@ -177,7 +148,7 @@ private int jjMoveNfa_0(int startState, int curPos)
             switch(jjstateSet[--i])
             {
                case 0:
-                  if ((0x7fffffff3ffffffeL & l) != 0L)
+                  if ((0x3fffffff3ffffffeL & l) != 0L)
                      kind = 7;
                   break;
                default : break;

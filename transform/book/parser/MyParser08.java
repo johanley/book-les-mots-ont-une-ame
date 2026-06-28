@@ -74,11 +74,37 @@ public class MyParser08 implements MyParser08Constants {
   }
 
   final public void all() throws ParseException {
-    paragraph();
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TEXT:{
+        paragraph();
+        break;
+        }
+      case BLANK_LINE:{
+        blankLine();
+        break;
+        }
+      default:
+        jj_la1[0] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case BLANK_LINE:
+      case TEXT:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[1] = jj_gen;
+        break label_1;
+      }
+    }
 }
 
   final public void paragraph() throws ParseException {Token start = getToken(1); Token end = null;
-    label_1:
+    label_2:
     while (true) {
       line();
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -87,17 +113,29 @@ public class MyParser08 implements MyParser08Constants {
         break;
         }
       default:
-        jj_la1[0] = jj_gen;
-        break label_1;
+        jj_la1[2] = jj_gen;
+        break label_2;
       }
     }
-end = token;
-log("Found a paragraph: " + match(start, end));
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case NL:{
+      jj_consume_token(NL);
+      break;
+      }
+    case 0:{
+      jj_consume_token(0);
+      break;
+      }
+    default:
+      jj_la1[3] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+end = token;  log("Found a paragraph: '" + match(start, end)  + "'");
 }
 
-  final public void line() throws ParseException {Token start = getToken(1);
-  Token end = null;
-    label_2:
+  final public void line() throws ParseException {Token start = getToken(1); Token end = null;
+    label_3:
     while (true) {
       jj_consume_token(TEXT);
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -106,13 +144,13 @@ log("Found a paragraph: " + match(start, end));
         break;
         }
       default:
-        jj_la1[1] = jj_gen;
-        break label_2;
+        jj_la1[4] = jj_gen;
+        break label_3;
       }
     }
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case NL:{
-      end = jj_consume_token(NL);
+      jj_consume_token(NL);
       break;
       }
     case 0:{
@@ -120,11 +158,18 @@ log("Found a paragraph: " + match(start, end));
       break;
       }
     default:
-      jj_la1[2] = jj_gen;
+      jj_la1[5] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-log("Found a line: " + match(start, end));
+end = token; log("Found a line: '" + match(start, end) + "'") ;
+}
+
+  final public void blankLine() throws ParseException {Token start = getToken(1); Token end = null;
+    jj_consume_token(BLANK_LINE);
+    jj_consume_token(NL);
+    jj_consume_token(NL);
+end = token; log("Found a BLANK line: '" + match(start, end) + "'") ;
 }
 
   /** Generated Token Manager. */
@@ -136,13 +181,13 @@ log("Found a line: " + match(start, end));
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[3];
+  final private int[] jj_la1 = new int[6];
   static private int[] jj_la1_0;
   static {
 	   jj_la1_init_0();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x80,0x80,0x41,};
+	   jj_la1_0 = new int[] {0x90,0x90,0x80,0x41,0x80,0x41,};
 	}
 
   /** Constructor with InputStream. */
@@ -156,7 +201,7 @@ log("Found a line: " + match(start, end));
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -170,7 +215,7 @@ log("Found a line: " + match(start, end));
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -180,7 +225,7 @@ log("Found a line: " + match(start, end));
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -198,7 +243,7 @@ log("Found a line: " + match(start, end));
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -207,7 +252,7 @@ log("Found a line: " + match(start, end));
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -216,7 +261,7 @@ log("Found a line: " + match(start, end));
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -272,7 +317,7 @@ log("Found a line: " + match(start, end));
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 3; i++) {
+	 for (int i = 0; i < 6; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {
