@@ -1,0 +1,82 @@
+options {
+  STATIC=false;
+  JAVA_UNICODE_ESCAPE=true; //I'm using \u0000 syntax below; SimpleCharStream is internally replaced by JavaCharStream
+}
+PARSER_BEGIN(MyParser07)
+package book.parser;
+
+import java.io.*;
+
+/** 
+  This class uses Unicode-escapes to refer to CP-1252 characters.
+*/
+public class MyParser07 {
+
+  /*
+   JavaCC generates the following constructors for your parser:
+    public MyParser(InputStream)
+    public MyParser(InputStream, String)  the string is an encoding
+    public MyParser(Reader)
+    public MyParser(MyParserTokenManager)
+  */
+
+  /*
+   Options related to encoding:
+    JAVA_UNICODE_ESCAPE 
+    UNICODE_INPUT
+
+    USER_CHAR_STREAM
+
+    GRAMMAR_ENCODING
+  */
+
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    log("Java's default file encoding is " + System.getProperty("file.encoding"));
+
+    //input from a file
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-07.1252";
+    log("Source text file: " + sourceText);
+    InputStream is = new FileInputStream(sourceText);
+    Reader r = new InputStreamReader(is, "windows-1252");
+    MyParser07 myParser = new MyParser07(r);
+
+    //the top-level production
+    myParser.all();
+    //this is either-or: 
+    //logTokens(r);
+
+    log("Done");
+  }
+  
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+
+  private static void logTokens(Reader r){
+    JavaCharStream jcs = new JavaCharStream(r);
+    MyParser07TokenManager mgr = new MyParser07TokenManager(jcs);
+    for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+      log("Token: '" + t.image + "'");
+    }
+  }
+
+}
+PARSER_END(MyParser07)
+
+/* Skip tabs. ASSUME: weird control codes in the range 0..1F will never be present in the text. */
+SKIP : { "\t" } 
+
+/* windows-1252 chars: \t, \r, \n, bytes 20..7E, 80, 82..8C, 8E, 91..9C, 9E..9F, A1..AC, AE..FF */
+TOKEN : {
+  <EXPECTED_CHAR:  [
+   "\r", "\n", 
+   " "-"~",
+   "\u20AC", "\u201A", "\u0192", "\u201E", "\u2026", "\u2020", "\u2021", "\u02C6", "\u2030", "\u0160", "\u2039", "\u0152", "\u017D", 
+   "\u2018", "\u2019", "\u201C", "\u201D", "\u2022", "\u2013", "\u2014", "\u02DC", "\u2122", "\u0161", "\u203A", "\u0153", "\u017E", "\u0178",  
+   "\u00A1"-"\u00AC", "\u00AE"-"\u00FF"
+ ] >
+} 
+
+void all() : { } {
+  (<EXPECTED_CHAR>)+ {log("Found the expected characters.");}<EOF>
+}

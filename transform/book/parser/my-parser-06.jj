@@ -1,0 +1,72 @@
+options {
+  STATIC=true;
+  GRAMMAR_ENCODING="Cp1252";
+  USER_CHAR_STREAM=true;
+}
+PARSER_BEGIN(MyParser06)
+package book.parser;
+
+import java.io.*;
+
+public class MyParser06 {
+
+  /*
+   JavaCC generates the following constructors for your parser:
+    public MyParser(InputStream)
+    public MyParser(InputStream, String)  the string is an encoding
+    public MyParser(Reader)
+    public MyParser(MyParserTokenManager)
+  */
+
+  /*
+   Options related to encoding:
+
+    JAVA_UNICODE_ESCAPE 
+    UNICODE_INPUT
+    USER_CHAR_STREAM
+
+    GRAMMAR_ENCODING
+  */
+
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    log("Java's default file encoding is " + System.getProperty("file.encoding"));
+
+    //input from a file
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-06.1252";
+    log("Source text file: " + sourceText);
+    log("Reading file with windows-1252 encoding.");
+    FileInputStream fis = new FileInputStream(sourceText);
+    InputStreamReader isr = new InputStreamReader(fis, "windows-1252"); //this is a Reader
+    MyParser06 myParser = new MyParser06(isr);
+
+    //the top-level production
+    myParser.all();
+
+    log("Done");
+  }
+  
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+}
+PARSER_END(MyParser06)
+
+/* Skip tabs. ASSUME: weird control codes in the range 0..1F will never be present in the text. */
+SKIP : { "\t" } 
+
+/* New line characters, bytes 20..7E, 80, 82..8C, 8E, 91..9C, 9E..9F, A2..AC, AE..FF */
+/* ["\r", "\n"] | [" "-"~"] | ["€"] | ["‚"-"Œ"] | ["Ž"] | ["‘"-"œ"] | ["ž"-"Ÿ"] | ["¡"-"¬"] | ["®"-"þ"] */
+/* ["\r", "\n"] | [" "-"~"] | ["€"] | ["‚"] | ["ƒ"]|["„"]|["…"]|["†"]|["‡"]|["ˆ"]|["‰"]|["Š"]|["‹"]|["Œ"] */
+/* GOOD:  [" "-"~", "À"-"ÿ"]   [" "-"~", "°"-"¿"]    [" "-"~", "¡"-"¬"]    [" "-"~", "®"-"ÿ"]   [" "-"~", "¡"-"¬", "®"-"ÿ"] */
+/* It looks like rows 80..8F and 90..9F are the only ones given a warning:  'Non-ASCII characters used in regular expression.'  */
+/* In Unicode, those bytes are all control codes, never characters. */
+/* BAD:   [" "-"~", "€"]  */
+/* BAD:   [" "-"~", "‚"]  */
+/* BAD:   [" "-"~", "ž"]  */
+TOKEN : {
+  <EXPECTED_CHAR:  [" "-"~", "¡"-"¬", "®"-"ÿ", "€"] >
+} 
+
+void all() : { } {
+  (<EXPECTED_CHAR>)+ {log("Found the expected characters.");}<EOF>
+}

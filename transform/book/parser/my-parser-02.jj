@@ -1,0 +1,55 @@
+options {
+  STATIC=true;
+}
+PARSER_BEGIN(MyParser02)
+package book.parser;
+
+import java.io.*;
+
+public class MyParser02 {
+
+  /*
+   JavaCC automatically generates the following constructors for your parser:
+    public MyParser(InputStream)
+    public MyParser(InputStream, String)  the string is an encoding
+    public MyParser(Reader)
+    public MyParser(MyParserTokenManager)
+  */
+
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    log("Java's default file encoding is " + System.getProperty("file.encoding"));
+
+    //input from a file
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text.1252";
+    FileInputStream fis = new FileInputStream(sourceText);
+    InputStreamReader in = new InputStreamReader(fis, "windows-1252"); //this is a Reader
+    MyParser02 myParser = new MyParser02(in);
+
+    //hard-coded input
+    /*
+    String input = "a";
+    StringReader sr = new StringReader(input);
+    Reader r = new BufferedReader(sr);
+    MyParser01 myParser = new MyParser01(r);
+    */
+
+    //the top-level production
+    myParser.all();
+
+    log("Done");
+  }
+  
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+}
+PARSER_END(MyParser02)
+
+
+TOKEN : {
+  <TEXT : "a">
+}
+
+void all() : { } {
+  <TEXT> {log("Found the letter.");} 
+}

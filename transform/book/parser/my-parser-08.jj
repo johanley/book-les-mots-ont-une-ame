@@ -1,0 +1,143 @@
+options {
+  STATIC=false;
+  JAVA_UNICODE_ESCAPE=true; //I'm using \u0000 syntax below; SimpleCharStream is internally replaced by JavaCharStream
+}
+PARSER_BEGIN(MyParser08)
+package book.parser;
+
+import java.io.*;
+
+/** 
+  This class uses Unicode-escapes to refer to CP-1252 characters.
+*/
+public class MyParser08 {
+
+  /*
+   JavaCC generates the following constructors for your parser:
+    public MyParser(InputStream)
+    public MyParser(InputStream, String)  the string is an encoding
+    public MyParser(Reader)
+    public MyParser(MyParserTokenManager)
+  */
+
+  /*
+   Options related to encoding:
+    JAVA_UNICODE_ESCAPE 
+    UNICODE_INPUT
+
+    USER_CHAR_STREAM
+
+    GRAMMAR_ENCODING
+  */
+
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    log("Java's default file encoding is " + System.getProperty("file.encoding"));
+
+    //input from a file
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-08.1252";
+    log("Source text file: " + sourceText);
+    InputStream is = new FileInputStream(sourceText);
+    Reader r = new InputStreamReader(is, "windows-1252");
+    MyParser08 myParser = new MyParser08(r);
+
+    //the top-level production
+    myParser.all();
+    //this is either-or: 
+    //logTokens(r);
+
+    log("Done");
+  }
+  
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+
+  private static void logTokens(Reader r){
+    int numTokensFound = 0;
+    JavaCharStream jcs = new JavaCharStream(r);
+    MyParser07TokenManager mgr = new MyParser07TokenManager(jcs);
+    for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+      log("Token: '" + t.image + "'");
+      ++numTokensFound;
+    }
+    log("Found this many tokens: " + numTokensFound);
+  }
+
+  /** 
+   Return the full string between a start-token and an end-token. 
+   This is useful for extracting data from a 'syntactic production'.
+  */
+  private static String match(Token start, Token end) {
+    StringBuilder sb = new StringBuilder();
+    //loop through the linked tokens from start to end
+    for (Token t = start; t != end.next; t = t.next) {
+      sb.append(t.image);
+    }
+    return sb.toString();
+  }
+
+}
+PARSER_END(MyParser08)
+
+/* Skip tabs. ASSUME: weird control codes in the range 0..1F will never be present in the text. */
+SKIP : { "\t" } 
+
+/* 
+ These tokens are treated as 'magic' characters in the text. 
+ They correspond to typesetting instructions.
+ They 'aren't allowed' to appear in the regular text flow. 
+ This makes the parser simpler.
+*/
+TOKEN : {
+    <ITALIC : "_"> 
+  | <POETRY : "@" >   
+  | <BLANK_LINE : "~~~~">
+  | <INDENT : "^">
+}
+
+/* Assumes Windows new-lines. */
+TOKEN : {
+  <NL : "\r\n">
+}
+
+/* 
+ The regular text flow.
+ Excludes new-lines.
+ Excludes the 'magic' characters meant for typesetting. 
+ The single tilde character is retained.
+ That might require a LOOKAHEAD somewhere, because tilde is used for typesetting.
+*/
+TOKEN : {
+  <TEXT:  [
+   " "-"?",
+   "A"-"]",
+   "`"-"~",
+   "\u20AC", "\u201A", "\u0192", "\u201E", "\u2026", "\u2020", "\u2021", "\u02C6", "\u2030", "\u0160", "\u2039", "\u0152", "\u017D", 
+   "\u2018", "\u2019", "\u201C", "\u201D", "\u2022", "\u2013", "\u2014", "\u02DC", "\u2122", "\u0161", "\u203A", "\u0153", "\u017E", "\u0178",  
+   "\u00A1"-"\u00AC", "\u00AE"-"\u00FF"
+ ] >
+} 
+
+
+void all(): {} {
+  paragraph()
+}
+
+void paragraph(): {
+  Token start = getToken(1); Token end = null;
+} {
+  //(line())+
+  //{ log("Found a paragraph"); }
+
+  (line())+ {end = token; //the last token in the match}
+  { log("Found a paragraph: " + match(start, end)); }
+}
+
+void line() : {
+  Token start = getToken(1);
+  Token end = null;
+} {
+  (<TEXT>)+ (end = <NL>|<EOF>) 
+  { log("Found a line: " + match(start, end)); }
+}
+

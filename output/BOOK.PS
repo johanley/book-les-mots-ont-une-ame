@@ -430,14 +430,19 @@
   } def-tmp
 } bind def
 
-% [()] an array of strings; one string is one line of the stanza.
+% [()] bool
+% An array of strings; one string is one line of the stanza.
 %
+% The boolean is a flag for emitting the final new-line; this controls how the stanza interacts 
+% with whatever FOLLOWS; use FALSE if followed by another stanza, TRUE if followed by a paragraph.
+% That will manage the single blank line after the stanza.
+% 
 % A stanza of poetry, kept-together on one page.
-% ASSUMES: the lines aren't 'too long' for the page width.
-% ASSUMES: there's no more than about 8 lines, such that the whole can be kept-together on one page.
-% The lines are rendederd in the current font.
+% ASSUMES: the lines aren't too long for the page width.
+% ASSUMES: there's 2..8 lines of poetry, such that it can reasonably be kept-together on one page.
+% The lines are rendered in the current font.
 /STANZA {
-  [/lines] {
+  [/lines /include-last-new-line] {
     % compute the final y-value, to see if it will fit on the current page
     % y - (num-lines + 1) * leading > 0
     current-y  lines length 1 add   LEADING mul  sub 
@@ -447,17 +452,61 @@
       NEW-PAGE % initial blank line not needed
     }
     ifelse 
-    lines {
-      3 INDENT show NEW-LINE
-    } forall
-    NEW-LINE % gives a blank line at the end
+    0 1 lines length 2 sub {
+      % all except the last line; there must be at least 2 lines!
+      /idx defi
+      3 INDENT 
+      lines idx get show NEW-LINE
+    } for
+    % the last line gets special treatment because of the yes-no for the final newline
+    3 INDENT 
+    lines last show 
+    include-last-new-line {NEW-LINE} if
  } def-tmp
 } bind def
 
 % str
-% centered, one-line text; slightly larger font; blank lines before and after?
-/SECTION {} bind def
+% Start of a section of a chapter. 
+% Some chapters have parts 'I', 'II', and so on.
+% centered, short-enough text; a blank line before and after the text.
+% ASSUMES: the following part starts with a single new-line (like a new paragraph.)
+/SECTION {
+  % compute the final y-value, to see if it will fit on the current page
+  current-y 3 LEADING mul sub
+  0 gt {
+    BLANK-LINE
+  } {
+    NEW-PAGE % initial blank line not needed
+  } ifelse
+  show-ctr-x 
+  NEW-LINE % because the following part is assumed to start with 1 more new-line (a paragraph).
+} bind def
 
+% [()] () [()] - intro-lines, body, outro-lines
+% Uses the current font.
+% The intro-lines are on the left, the outro-lines are on the right.
+% The intro-outro lines will fit on the line.
+% BE CAREFUL WITH PAGE BREAKS.
+% The body uses only the current font.
+/CORRESPONDANCE {
+  [/intro /body /outro]{
+    % temp alterations to the work-box; manual restore later
+    wd 10 pct 0 translate
+    /wd wd 80 pct def % this is in a temp dict
+    BLANK-LINE
+    intro {
+      3 INDENT show NEW-LINE 
+    } forall
+    NEW-LINE
+    body PROSE 
+    BLANK-LINE
+    outro {
+      25 INDENT show NEW-LINE 
+    } forall
+    wd -10 pct 0 translate % back to where it was
+    NEW-LINE % because the next para has a new-line too
+  } def-tmp
+} bind def
 
 /inch {72 mul} bind def
 /8th-inch {72 mul 8 div} bind def
@@ -606,8 +655,6 @@ showpage
   {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
   {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
   {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
-  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
-  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
   {NEW-PARA}
   {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
   {NEW-PARA}
@@ -623,7 +670,28 @@ showpage
   {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
   {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
   {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
-  {R [(Upon the beach breathe I the air) (And cast adrift this quiet prayer.) (Where ends the Earth and starts the sea,) (There will my heart remember thee.)]  STANZA}
+  {R [(Upon the beach breathe I the air) (And cast adrift this quiet prayer.) (Where ends the Earth and starts the sea,) (There will my heart remember thee.)]  true STANZA}
+  {NEW-PARA}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I [(Upon the beach breathe I the air) (And cast adrift this quiet prayer.)] false STANZA}
+  {I [(Upon the beach breathe I the air) (And cast adrift this quiet prayer.)] true STANZA}
+  {NEW-PARA}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {I (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R [(Antibes) (11 juin)] (This nasthu ntahe ntoehua o eoe u oeu oae  oae u aoeu aoe u aou ao eu ao u so that the tus tetotal sat fo toa otu thnutaohe sa a  aoeu aoe oe uao eu oe  oae u aoeu oae u) [(Votre serviteur,) (Dr. Bonnard)] CORRESPONDANCE}
+  {NEW-PARA}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
+  {R (Now is the time for all men to take control of their destiny, to take control of their mind....) PROSE}
 ] TYPESET
 
 % WARNING: YOU MAY HAVE ADD EMPTY PAGES HERE MANUALLY. 

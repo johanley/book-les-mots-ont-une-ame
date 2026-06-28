@@ -32,7 +32,8 @@ public final class WeirdByteValues {
     WeirdByteValues examineBytes = new WeirdByteValues(TABS_ARE_WEIRD);
     //examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input");
     //examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\util");
-    examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\output\\");
+    //examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\output\\");
+    examineBytes.report("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-05-small.1252");
   }
   
   WeirdByteValues(boolean tabsAreWeird){
