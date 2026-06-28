@@ -5,7 +5,7 @@ package book.parser;
 import java.io.*;
 
 /** 
-  This class uses Unicode-escapes to refer to CP-1252 characters.
+  This class uses Unicode-escapes to refer to some CP-1252 characters.
 */
 public class MyParser08 implements MyParser08Constants {
 
@@ -62,7 +62,7 @@ public class MyParser08 implements MyParser08Constants {
 
   /** 
    Return the full string between a start-token and an end-token. 
-   This is useful for extracting data from a 'syntactic production'.
+   This is useful for extracting data from a 'syntactic production', if you're not using JJTree to do so.
   */
   private static String match(Token start, Token end) {
     StringBuilder sb = new StringBuilder();
@@ -71,6 +71,10 @@ public class MyParser08 implements MyParser08Constants {
       sb.append(t.image);
     }
     return sb.toString();
+  }
+
+  private static void logFound(String name, Token start, Token end) {
+    log("Found a " + name + ": '" + match(start, end)  + "'");
   }
 
   final public void all() throws ParseException {
@@ -131,7 +135,7 @@ public class MyParser08 implements MyParser08Constants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-end = token;  log("Found a paragraph: '" + match(start, end)  + "'");
+end = token;  logFound("paragraph", start, end);
 }
 
   final public void line() throws ParseException {Token start = getToken(1); Token end = null;
@@ -162,14 +166,14 @@ end = token;  log("Found a paragraph: '" + match(start, end)  + "'");
       jj_consume_token(-1);
       throw new ParseException();
     }
-end = token; log("Found a line: '" + match(start, end) + "'") ;
+end = token; logFound("line", start, end);
 }
 
   final public void blankLine() throws ParseException {Token start = getToken(1); Token end = null;
     jj_consume_token(BLANK_LINE);
     jj_consume_token(NL);
     jj_consume_token(NL);
-end = token; log("Found a BLANK line: '" + match(start, end) + "'") ;
+end = token; logFound("BLANK line", start, end);
 }
 
   /** Generated Token Manager. */

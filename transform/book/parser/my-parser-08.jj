@@ -8,7 +8,7 @@ package book.parser;
 import java.io.*;
 
 /** 
-  This class uses Unicode-escapes to refer to CP-1252 characters.
+  This class uses Unicode-escapes to refer to some CP-1252 characters.
 */
 public class MyParser08 {
 
@@ -65,7 +65,7 @@ public class MyParser08 {
 
   /** 
    Return the full string between a start-token and an end-token. 
-   This is useful for extracting data from a 'syntactic production'.
+   This is useful for extracting data from a 'syntactic production', if you're not using JJTree to do so.
   */
   private static String match(Token start, Token end) {
     StringBuilder sb = new StringBuilder();
@@ -75,6 +75,11 @@ public class MyParser08 {
     }
     return sb.toString();
   }
+
+  private static void logFound(String name, Token start, Token end) {
+    log("Found a " + name + ": '" + match(start, end)  + "'"); 
+  }
+
 
 }
 PARSER_END(MyParser08)
@@ -104,6 +109,8 @@ TOKEN : {
  The regular text flow.
  Excludes new-lines.
  Excludes all the 'magic' characters above meant for typesetting. 
+ This increases the simplicity of the parser's implementation.
+ WARNING: I'm a bit worried about excluding the tilde character here.
 */
 TOKEN : {
   <TEXT:  [
@@ -124,12 +131,10 @@ void all(): {} {
 void paragraph(): { 
   Token start = getToken(1); Token end = null;
 } {
-  //(line())+
-  //{ log("Found a paragraph"); }
 
   (line())+ (<NL>|<EOF>)
 
-  {end = token;  log("Found a paragraph: '" + match(start, end)  + "'"); }
+  {end = token;  logFound("paragraph", start, end);}
 }
 
 void line() : { 
@@ -138,7 +143,7 @@ void line() : {
 
   (<TEXT>)+ (<NL>|<EOF>) 
 
-  {end = token; log("Found a line: '" + match(start, end) + "'") ; }
+  {end = token; logFound("line", start, end);}
 }
 
 void blankLine() : { 
@@ -147,5 +152,5 @@ void blankLine() : {
 
   <BLANK_LINE> <NL><NL>
 
-  {end = token; log("Found a BLANK line: '" + match(start, end) + "'") ; }
+  {end = token; logFound("BLANK line", start, end);}
 }
