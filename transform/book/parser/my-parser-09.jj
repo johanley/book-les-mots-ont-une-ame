@@ -87,11 +87,11 @@ SKIP : { "\t" }
 
 /* The order of appearance of tokens here is very important! */
 TOKEN : { 
-  <BLANK_LINE: "~~~~\r\n">
+  <BLANK_LINE: "~~~~\r\n" >
 }
 TOKEN : {
- <PARA: (<LINE>)+>
- /*need to translate new lines into single spaces; here, image is a StringBuilder. */ 
+ <PARA: (<LINE>)+ "\r\n">
+ /* change to 1 line of text: translate new lines into single spaces; here, 'image' is a StringBuilder object. */ 
  {matchedToken.image = image.toString().replace("\r\n", " ").trim();}
 }
 TOKEN : {

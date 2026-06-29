@@ -1,3 +1,5 @@
+The order of appearance of tokens can be very important.
+
 Unexpected:
 With only a simple 'skip tabs' token defined, every single character in the stream is apparently a token by default.
 See MyParser09. 
@@ -5,3 +7,6 @@ See MyParser09.
       log("Token: '" + t.image + "'");
       ++numTokensFound;
     }
+
+
+Be careful with where the 'main' method goes: either the parser, or the TokenManager.
