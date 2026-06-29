@@ -1,0 +1,7 @@
+Unexpected:
+With only a simple 'skip tabs' token defined, every single character in the stream is apparently a token by default.
+See MyParser09. 
+    for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+      log("Token: '" + t.image + "'");
+      ++numTokensFound;
+    }
