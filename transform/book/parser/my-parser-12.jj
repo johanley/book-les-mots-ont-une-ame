@@ -83,7 +83,10 @@ TOKEN_MGR_DECLS : {
 }
   
 
-/* Skip tabs in all lexical states. ASSUME: weird control codes in the range 0..1F will never be present in the text. */
+/* 
+ Skip tabs in all lexical states. 
+ ASSUME: weird control codes in the range 0..1F will never be present in the text. 
+*/
 <*>
 SKIP : { "\t" } 
 
@@ -104,7 +107,7 @@ SKIP : { "\t" }
 
 /*  The order of appearance of tokens can be very important! */
 
-/* Not a character used for control or typesetting (in all lexical states). */
+/* Any char except those used for control or typesetting (in all lexical states). */
 <*> TOKEN : {
  <#NOT_CONTROL: ~["~","@","^", "_", "\r", "\n"] >
 }
@@ -116,31 +119,26 @@ SKIP : { "\t" }
   Can NL NL be matched before NL? 
   I have problems with the 'greedy' behaviour gobbling up the to the end of all paras.
 
-  \r -> new state?
-  then: \n OR \n\r\n
- 
   \r\n -> new state? to detect end-line or end-para
   then : \r\n (end para) or not-control (replace with single space)
+
+  replace \r\n with single space, then goto new state
+  in new state, \r\n means end-para, and then go back to default state
+  anything else is MORE'd? back to default? that actually might work...
   
-  \r\n\r\n -> new state?
 */
 
-
-/* Lines are pretty easy, but runs (which often cross lines) are not so easy. */
-
 <DEFAULT> TOKEN : {
-  <NL: "\r\n" >
+  <NL: "\r\n" > 
+  {
+   //add a space between words when there's a NL
+   matchedToken.image = matchedToken.image.replace("\r\n", " ");
+  } : NL_MANAGER_STATE
 }
 
 <DEFAULT> TOKEN : {
- <PARA: (<LINE>)+ <NL> >
+ <TEXT: (<NOT_CONTROL>)+ >
 }
-
-<DEFAULT> TOKEN : {
- <LINE: (<NOT_CONTROL>)+ <NL> >
-}
-
-
 
 /* 
  When this character is encountered, the lexical state in changed to one specific to poetry.
@@ -150,6 +148,21 @@ SKIP : { "\t" }
 <DEFAULT> TOKEN : {
   <POEM_BEGIN: "@" > : POEM_STATE  /* Transition to a non-default lexical state. */
 }
+
+
+
+
+/* Manage the different roles played by NL. */
+<NL_MANAGER_STATE> TOKEN : {
+  <SECOND_NL: "\r\n" > { log("NL: end para."); } : DEFAULT /*End of para found. Return to default state. */
+}
+
+<NL_MANAGER_STATE> MORE : {
+ <NEXT_LINE_OF_TEXT: ~["\r", "\n"] > { log("NL: more text."); }: DEFAULT /* Next line of text found, to be appended to next token. Return to default state. */
+}
+
+
+
 
 /* One stanza of a poem. Each line ends with NL. The stanza ends with NL NL. */
 <POEM_STATE> TOKEN : {

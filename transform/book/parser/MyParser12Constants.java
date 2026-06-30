@@ -15,20 +15,24 @@ public interface MyParser12Constants {
   /** RegularExpression Id. */
   int NL = 3;
   /** RegularExpression Id. */
-  int PARA = 4;
+  int TEXT = 4;
   /** RegularExpression Id. */
-  int LINE = 5;
+  int POEM_BEGIN = 5;
   /** RegularExpression Id. */
-  int POEM_BEGIN = 6;
+  int SECOND_NL = 6;
   /** RegularExpression Id. */
-  int POEM = 7;
+  int NEXT_LINE_OF_TEXT = 7;
   /** RegularExpression Id. */
-  int POEM_LINE = 8;
+  int POEM = 8;
+  /** RegularExpression Id. */
+  int POEM_LINE = 9;
 
   /** Lexical state. */
   int POEM_STATE = 0;
   /** Lexical state. */
-  int DEFAULT = 1;
+  int NL_MANAGER_STATE = 1;
+  /** Lexical state. */
+  int DEFAULT = 2;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -36,9 +40,10 @@ public interface MyParser12Constants {
     "\"\\t\"",
     "<NOT_CONTROL>",
     "\"\\r\\n\"",
-    "<PARA>",
-    "<LINE>",
+    "<TEXT>",
     "\"@\"",
+    "\"\\r\\n\"",
+    "<NEXT_LINE_OF_TEXT>",
     "<POEM>",
     "<POEM_LINE>",
   };
