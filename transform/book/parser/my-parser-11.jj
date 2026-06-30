@@ -2,12 +2,12 @@ options {
   STATIC=false;
   JAVA_UNICODE_ESCAPE=true; //I'm using \u0000 syntax below
 }
-PARSER_BEGIN(MyParser09)
+PARSER_BEGIN(MyParser11)
 package book.parser;
 
 import java.io.*;
 
-public class MyParser09 {
+public class MyParser11 {
 
   /*
    JavaCC generates the following constructors for your parser:
@@ -29,12 +29,13 @@ public class MyParser09 {
     log("Java's default file encoding is " + System.getProperty("file.encoding"));
 
     //input from a file
-    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-09.1252";
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-11.1252";
     log("Source text file: " + sourceText);
     InputStream is = new FileInputStream(sourceText);
     Reader r = new InputStreamReader(is, "windows-1252");
-    MyParser09 myParser = new MyParser09(r);
+    MyParser11 myParser = new MyParser11(r);
 
+    //TO-DO!s
     //the top-level production
     //myParser.all();
 
@@ -62,17 +63,18 @@ public class MyParser09 {
     log("Found a " + name + ": '" + match(start, end)  + "'"); 
   }
 }
-PARSER_END(MyParser09)
+PARSER_END(MyParser11)
 
+/* Code explicitly for the TokenManager, not the main parser (above). */
 TOKEN_MGR_DECLS : {
   public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
-    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-09.1252";
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-11.1252";
     InputStream is = new FileInputStream(sourceText);
     Reader r = new InputStreamReader(is, "windows-1252");
     JavaCharStream jcs = new JavaCharStream(r);
-    MyParser09TokenManager mgr = new MyParser09TokenManager(jcs);
+    MyParser11TokenManager mgr = new MyParser11TokenManager(jcs);
     for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
-      log("Token " + t.kind + ": " + MyParser09Constants.tokenImage[t.kind] + " '" + t.image + "'" );
+      log("Token " + t.kind + ": " + MyParser11Constants.tokenImage[t.kind] + " '" + t.image + "'" );
     }
   }
   private static void log(Object thing){
@@ -81,32 +83,46 @@ TOKEN_MGR_DECLS : {
 }
   
 
-/* DO I JUST PUT EOF IN THE PRODUCTIONS? * /
-
-
 /* Skip tabs. ASSUME: weird control codes in the range 0..1F will never be present in the text. */
 SKIP : { "\t" } 
 
-/* The order of appearance of tokens here is very important! */
-TOKEN : { 
-  <BLANK_LINE: "~~~~\r\n" >
+/*  
+  I try to separate characters into two bags with no overlap: control-or-typesetting, and regular text flow. 
+
+  Newlines have a triple role, which is annoying: 
+    - NL is placed 'by accident' simply as convenient line breaks (which almost always aren't the 'real' line breaks you want)
+    - for poetry '@' and indent '^', the NL is not a convenience, but where the line must actually end
+    - the doubled NL-NL means end-of-paragraph
+
+  It would be simpler if NL did not have this triple role. 
+  Two possible solutions: 
+   - cheat: preprocess the source text in some way, such that the ambiguity is removed.
+   - use different lexical states for the various cases.
+*/
+
+/*  The order of appearance of tokens can be very important! */
+
+/* Not a character used for control or typesetting. */
+TOKEN : {
+ <#NOT_CONTROL: ~["~","@","^", "_", "\r", "\n"] >
 }
+
 TOKEN : {
- <PARA: (<LINE>)+ "\r\n">
- /* replace new-lines into single spaces; here, 'image' is a StringBuilder object. */ 
- {matchedToken.image = image.toString().replace("\r\n", " ").trim();}
+ <END_PARA: "\r\n">
 }
+
+/* Run of text with no italics, maybe with end-paragraph. */
 TOKEN : {
- <LINE: (<TEXT>)+ "\r\n" >
+  <REG_TXT: (<NOT_CONTROL>)+ (<END_PARA>)? >
 } 
+
+/* Run of italic text, maybe with end-paragraph. */
 TOKEN : {
-  <TEXT:  [
-   " "-"?",
-   "A"-"]",
-   "`"-"}",
-   "\u20AC", "\u201A", "\u0192", "\u201E", "\u2026", "\u2020", "\u2021", "\u02C6", "\u2030", "\u0160", "\u2039", "\u0152", "\u017D", 
-   "\u2018", "\u2019", "\u201C", "\u201D", "\u2022", "\u2013", "\u2014", "\u02DC", "\u2122", "\u0161", "\u203A", "\u0153", "\u017E", "\u0178",  
-   "\u00A1"-"\u00AC", "\u00AE"-"\u00FF"
- ] >
+  <ITALIC_TXT: "_" (<NOT_CONTROL>)+ "_" (<END_PARA>)? >
 } 
+
+TOKEN : {
+  <BLANK_LINE: "~~~~" <END_PARA> >
+} 
+
 

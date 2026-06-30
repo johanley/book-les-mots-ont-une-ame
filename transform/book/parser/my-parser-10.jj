@@ -2,12 +2,12 @@ options {
   STATIC=false;
   JAVA_UNICODE_ESCAPE=true; //I'm using \u0000 syntax below
 }
-PARSER_BEGIN(MyParser09)
+PARSER_BEGIN(MyParser10)
 package book.parser;
 
 import java.io.*;
 
-public class MyParser09 {
+public class MyParser10 {
 
   /*
    JavaCC generates the following constructors for your parser:
@@ -29,12 +29,13 @@ public class MyParser09 {
     log("Java's default file encoding is " + System.getProperty("file.encoding"));
 
     //input from a file
-    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-09.1252";
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-10.1252";
     log("Source text file: " + sourceText);
     InputStream is = new FileInputStream(sourceText);
     Reader r = new InputStreamReader(is, "windows-1252");
-    MyParser09 myParser = new MyParser09(r);
+    MyParser10 myParser = new MyParser10(r);
 
+    //TO-DO!s
     //the top-level production
     //myParser.all();
 
@@ -62,17 +63,18 @@ public class MyParser09 {
     log("Found a " + name + ": '" + match(start, end)  + "'"); 
   }
 }
-PARSER_END(MyParser09)
+PARSER_END(MyParser10)
 
+/* Code explicitly for the TokenManager, not the main parser (above). */
 TOKEN_MGR_DECLS : {
   public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
-    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-09.1252";
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-10.1252";
     InputStream is = new FileInputStream(sourceText);
     Reader r = new InputStreamReader(is, "windows-1252");
     JavaCharStream jcs = new JavaCharStream(r);
-    MyParser09TokenManager mgr = new MyParser09TokenManager(jcs);
+    MyParser10TokenManager mgr = new MyParser10TokenManager(jcs);
     for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
-      log("Token " + t.kind + ": " + MyParser09Constants.tokenImage[t.kind] + " '" + t.image + "'" );
+      log("Token " + t.kind + ": " + MyParser10Constants.tokenImage[t.kind] + " '" + t.image + "'" );
     }
   }
   private static void log(Object thing){
@@ -81,32 +83,39 @@ TOKEN_MGR_DECLS : {
 }
   
 
-/* DO I JUST PUT EOF IN THE PRODUCTIONS? * /
-
-
 /* Skip tabs. ASSUME: weird control codes in the range 0..1F will never be present in the text. */
 SKIP : { "\t" } 
 
 /* The order of appearance of tokens here is very important! */
+
+/* 
+ I separate characters into two disjoint sets: control-typesetting, and regular text flow. 
+ The END_LINE token isn't really control flow, but I treat it as such here.
+*/
+
+TOKEN : {
+  <PARA: (<FULL_LINE>)+ ("\r\n")?>
+}
+
+TOKEN : {
+  <FULL_LINE: (<TXT_LINE>) "\r\n">
+}
+
+/* One line of text, without the newline. */
+TOKEN : {
+  <TXT_LINE: (~["~","@","^", "_", "\r", "\n"])+ >
+} 
+
+/* Control/typesetting. */
 TOKEN : { 
-  <BLANK_LINE: "~~~~\r\n" >
+   <END_PARA: "\r\n\r\n" >
+ | <END_LINE: "\r\n" >
+ | <BLANK_LINE: "~~~~\r\n\r\n" >
+ | <POEM: "@" > 
+ | <INDENT: "^" >
+ | <ITALIC: "_" >
 }
-TOKEN : {
- <PARA: (<LINE>)+ "\r\n">
- /* replace new-lines into single spaces; here, 'image' is a StringBuilder object. */ 
- {matchedToken.image = image.toString().replace("\r\n", " ").trim();}
-}
-TOKEN : {
- <LINE: (<TEXT>)+ "\r\n" >
-} 
-TOKEN : {
-  <TEXT:  [
-   " "-"?",
-   "A"-"]",
-   "`"-"}",
-   "\u20AC", "\u201A", "\u0192", "\u201E", "\u2026", "\u2020", "\u2021", "\u02C6", "\u2030", "\u0160", "\u2039", "\u0152", "\u017D", 
-   "\u2018", "\u2019", "\u201C", "\u201D", "\u2022", "\u2013", "\u2014", "\u02DC", "\u2122", "\u0161", "\u203A", "\u0153", "\u017E", "\u0178",  
-   "\u00A1"-"\u00AC", "\u00AE"-"\u00FF"
- ] >
-} 
+
+
+
 

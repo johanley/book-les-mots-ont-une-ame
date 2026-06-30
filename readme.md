@@ -157,3 +157,40 @@ Selected 8859-1 characters, octal (hex)
 - italic: underscores, as in  _Jean-Guiton_ in L'Epave.
 - correspondance: an example in L'Enfant, Decouverte. '^'. Perhaps it means indentation?
 - poetry: an example in Le Lit. '@'
+
+
+## JavaCC 
+
+Parser construction is simplified if you separate characters into two bags: 
+- control / typesetting
+- regular text flow
+
+If those two bags have no overlap, then you avoid a lot of difficulties from the start.
+
+The order of appearance of tokens can be very important.
+If you change the order of appearance of the token definitions, that will often cause large changes in behaviour.
+
+Unexpected: if you only define a simple 'skip tabs' token defined, every single character in the stream is apparently a token by default.
+
+Unexpected: the built-in <EOF> can't be placed inside a token definition. 
+It can only appear in a 'syntactic production'. 
+
+The snippet of code you see in docs for viewing all of the tokens in the stream:
+ 
+    `for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+      log("Token: '" + t.image + "'");
+      ++numTokensFound;
+    }`
+    
+This code snippet fails when the input is from a file. 
+It barfs on the final EOF.
+You have a choice:
+- do nothing about it, but just be aware of it
+- read the file content into a String, and pass a StringReader into the tokenizer    
+
+
+Be careful with where the 'main' method goes: either the parser, or the TokenManager.
+For listing the detected tokens, it seems to make sense to put that code in the TokenManager class, using TOKEN_MGR_DECLS.
+
+
+Token names need to be unique, even if they belong to different lexical states.
