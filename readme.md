@@ -161,6 +161,19 @@ Selected 8859-1 characters, octal (hex)
 
 ## JavaCC 
 
+There's often no clear division between the pieces (tokens) and how they are put together (syntax).
+Since you can define new tokens from existing ones, that is indeed a syntactic operation.
+
+You could have fewer tokens, and more syntactic productions, or vice versa.
+The tokens could be little independent pieces, that are never 'put together' to make more tokens. 
+Or, you can indeed make tokens from smaller tokens. 
+It seems to be a matter of choice where you 'choose to stop' defining tokens, so to speak.
+
+AI recommends: 'If something is naturally a single "word" in the language, make it a token. 
+If it represents a relationship between words, make it a grammar production.'
+
+AI recommends: 'Keep the lexer dumb, and the parser smart.'
+
 Parser construction is simplified if you separate characters into two bags: 
 - control / typesetting
 - regular text flow
@@ -192,5 +205,5 @@ You have a choice:
 Be careful with where the 'main' method goes: either the parser, or the TokenManager.
 For listing the detected tokens, it seems to make sense to put that code in the TokenManager class, using TOKEN_MGR_DECLS.
 
+Token names need to be unique, even if they belong to different lexical states(?).
 
-Token names need to be unique, even if they belong to different lexical states.

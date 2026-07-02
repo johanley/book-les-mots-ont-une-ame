@@ -1,0 +1,166 @@
+options {
+  STATIC=false;
+  JAVA_UNICODE_ESCAPE=true; //in case I use \u0000 syntax below
+}
+PARSER_BEGIN(MyParser14)
+package book.parser;
+
+import java.io.*;
+
+public class MyParser14 {
+
+  /*
+   JavaCC generates the following constructors for your parser:
+    public MyParser(InputStream)
+    public MyParser(InputStream, String)  the string is an encoding
+    public MyParser(Reader)
+    public MyParser(MyParserTokenManager)
+
+   This class can use Unicode-escapes \u0000 to refer to some CP-1252 characters.
+
+   Options related to encoding:
+    JAVA_UNICODE_ESCAPE 
+    UNICODE_INPUT
+    USER_CHAR_STREAM
+    GRAMMAR_ENCODING
+  */
+
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    log("Java's default file encoding is " + System.getProperty("file.encoding"));
+
+    //input from a file
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-14.1252";
+    log("Source text file: " + sourceText);
+    InputStream is = new FileInputStream(sourceText);
+    Reader r = new InputStreamReader(is, "windows-1252");
+    MyParser14 myParser = new MyParser14(r);
+
+    //the top-level production
+    myParser.all();
+
+    log("Done");
+  }
+  
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+
+  /** 
+   Return the full string between a start-token and an end-token. 
+   This is useful for extracting data from a 'syntactic production', if you're not using JJTree to do so.
+  */
+  private static String match(Token start, Token end) {
+    StringBuilder sb = new StringBuilder();
+    //loop through the linked tokens from start to end
+    for (Token t = start; t != end.next; t = t.next) {
+      sb.append(t.image);
+    }
+    return sb.toString();
+  }
+
+  private static void logFound(String name, Token start, Token end) {
+    log("Found a " + name + ": '" + match(start, end)  + "'"); 
+  }
+}
+PARSER_END(MyParser14)
+
+/* Code explicitly for the TokenManager, not the main parser (above). */
+TOKEN_MGR_DECLS : {
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-14.1252";
+    InputStream is = new FileInputStream(sourceText);
+    Reader r = new InputStreamReader(is, "windows-1252");
+    JavaCharStream jcs = new JavaCharStream(r);
+    MyParser14TokenManager mgr = new MyParser14TokenManager(jcs);
+    for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+      log("Token " + t.kind + ": " + MyParser14Constants.tokenImage[t.kind] + " '" + t.image + "'" );
+    }
+  }
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+}
+  
+
+/* 
+ Skip tabs.
+ ASSUME: weird control codes in the range 0..1F will never be present in the text. 
+*/
+SKIP : { "\t" } 
+
+/*  
+  I separate characters into two bags with no overlap: control-or-typesetting, and regular text flow. 
+  I define tokens only for the most basic building blocks.
+  The rest is defined using syntactic productions.
+
+  Newlines have a triple role, which is annoying: 
+    - NL is placed 'by accident' simply as convenient line breaks (which almost always aren't the 'real' line breaks you want)
+    - for poetry '@' and indent '^', the NL is not a convenience, but where the line must actually end
+    - the doubled NL-NL means end-of-paragraph
+
+  THIS VERSION ASSUMES THE 'SPURIOUS' NEWLINES HAVE BEEN REPLACED WITH SPACES (PARAS ARE 'FLATTENED' INTO ONE LINE).
+*/
+
+/*  The order of appearance of tokens can sometimes be very important!  */
+
+/* Any characters, except those used for control or typesetting. */
+TOKEN : {
+ <TEXT: (~["|", "~","@","^", "_", "\r", "\n"])+ >
+}
+
+/* The tokens used for control or typesetting. */
+TOKEN : {
+   <NL: "\r\n">        /* repositions the currentpoint for a new paragraph */
+ | <UNDERSCORE: "_">   /* italic text */
+ | <AMPERSAND: "@">    /* poetry stanzas */ 
+ | <CARET: "^">        /* indentation */
+ | <PIPE: "|">         /* centering text */
+ | <TILDE: "~~~~">     /* blank lines */
+}
+
+void all() : {}{
+  (paragraph())+ <EOF>
+}
+
+void reposition(): {} {
+  <NL> /* for the start of a new paragraph. */
+}
+
+void paragraph() : {} {
+  (regularRun() | italicRun())+ reposition() 
+} 
+
+void italicRun() : {} {
+  <UNDERSCORE> <TEXT> <UNDERSCORE>
+} 
+
+/* Regular runs are not as well-delimited as italic runs. */ 
+void regularRun() : {} {
+ /* fails if I use '+' here */
+ <TEXT> 
+
+ //  (<TEXT> | <NL>)+ 
+ // (<TEXT> | <NL>) (<TEXT> | <NL>) *
+ // (<TEXT> | <NL>)* (<TEXT> | <NL>) 
+}
+
+
+
+/*
+void all() : {}{
+  (paragraph())+ <EOF>
+}
+
+void paragraph() : {}{
+  regularText() <NL>
+} 
+
+void regularText(): {} {
+  (regularTextLine())+
+}
+
+void regularTextLine() : {}{
+  <TEXT> <NL>
+}
+*/
+

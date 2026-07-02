@@ -1,0 +1,185 @@
+options {
+  STATIC=false;
+  JAVA_UNICODE_ESCAPE=true; //I'm using \u0000 syntax below
+}
+PARSER_BEGIN(MyParser15)
+package book.parser;
+
+import java.io.*;
+
+public class MyParser15 {
+
+  /*
+   JavaCC generates the following constructors for your parser:
+    public MyParser(InputStream)
+    public MyParser(InputStream, String)  the string is an encoding
+    public MyParser(Reader)
+    public MyParser(MyParserTokenManager)
+
+   This class uses Unicode-escapes to refer to some CP-1252 characters.
+
+   Options related to encoding:
+    JAVA_UNICODE_ESCAPE 
+    UNICODE_INPUT
+    USER_CHAR_STREAM
+    GRAMMAR_ENCODING
+  */
+
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    log("Java's default file encoding is " + System.getProperty("file.encoding"));
+
+    //input from a file
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-15.1252";
+    log("Source text file: " + sourceText);
+    InputStream is = new FileInputStream(sourceText);
+    Reader r = new InputStreamReader(is, "windows-1252");
+    MyParser15 myParser = new MyParser15(r);
+
+    //TO-DO!s
+    //the top-level production
+    //myParser.all();
+
+    log("Done");
+  }
+  
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+
+  /** 
+   Return the full string between a start-token and an end-token. 
+   This is useful for extracting data from a 'syntactic production', if you're not using JJTree to do so.
+  */
+  private static String match(Token start, Token end) {
+    StringBuilder sb = new StringBuilder();
+    //loop through the linked tokens from start to end
+    for (Token t = start; t != end.next; t = t.next) {
+      sb.append(t.image);
+    }
+    return sb.toString();
+  }
+
+  private static void logFound(String name, Token start, Token end) {
+    log("Found a " + name + ": '" + match(start, end)  + "'"); 
+  }
+}
+PARSER_END(MyParser15)
+
+/* Code explicitly for the TokenManager, not the main parser (above). */
+TOKEN_MGR_DECLS : {
+  public static void main(String[] args) throws ParseException, FileNotFoundException, UnsupportedEncodingException {
+    String sourceText = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-15.1252";
+    InputStream is = new FileInputStream(sourceText);
+    Reader r = new InputStreamReader(is, "windows-1252");
+    JavaCharStream jcs = new JavaCharStream(r);
+    MyParser15TokenManager mgr = new MyParser15TokenManager(jcs);
+    for(Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+      log("Token " + t.kind + ": " + MyParser15Constants.tokenImage[t.kind] + " '" + t.image + "'" );
+    }
+  }
+  private static void log(Object thing){
+    System.out.println(thing.toString());
+  } 
+}
+  
+
+/* 
+ Skip tabs in all lexical states. 
+ ASSUME: weird control codes in the range 0..1F will never be present in the text. 
+*/
+<*>
+SKIP : { "\t" } 
+
+/*  
+  I try to separate characters into two bags with no overlap: control-or-typesetting, and regular text flow. 
+
+  Newlines have a triple role, which is annoying: 
+    - NL is placed 'by accident' simply as convenient line breaks (which almost always aren't the 'real' line breaks you want)
+    - for poetry '@' and indent '^', the NL is not a convenience, but where the line must actually end
+    - the doubled NL-NL means end-of-paragraph
+
+  It would be simpler if NL did not have this triple role. 
+  Two possible solutions: 
+   - cheat: preprocess the source text in some way, such that the ambiguity is removed.
+   - use different lexical states for the various cases.
+
+*/
+
+/*  The order of appearance of tokens can be very important! */
+
+/* Any char except those used for control or typesetting (in all lexical states). */
+<*> TOKEN : {
+ <#NOT_CONTROL: ~["~","@","^", "_", "\r", "\n"] >
+}
+
+/* 
+  In the DEFAULT lexical state, the NL's at the end of lines are spurious, but the NL NL at the end of paragraphs are not. 
+  The problem is how to distinguish those two cases. 
+  For the first, NL is eaten (and changed to a space); for the second, the NLs can no longer be eaten, and have real meaning.
+  Can NL NL be matched before NL? 
+  I have problems with the 'greedy' behaviour gobbling up the to the end of all paras.
+
+  \r\n -> new state? to detect end-line or end-para
+  then : \r\n (end para) or not-control (replace with single space)
+
+  replace \r\n with single space, then goto new state
+  in new state, \r\n means end-para, and then go back to default state
+  anything else is MORE'd? back to default? that actually might work...
+  
+*/
+
+<DEFAULT> TOKEN : {
+  <NL: "\r\n" > 
+  {
+   //need a single space between words when there's a NL
+   matchedToken.image = matchedToken.image.replace("\r\n", " ");
+  } : NL_MANAGER_STATE
+}
+
+<DEFAULT> TOKEN : {
+ <TEXT: (<NOT_CONTROL>)+ >
+}
+
+<DEFAULT> TOKEN : {
+ <ITALIC_TEXT: "_" (<NOT_CONTROL>)+ "_" >
+}
+
+
+/* 
+ When this character is encountered, the lexical state in changed to one specific to poetry.
+ This is one way of dealing with the hard-coded NL's used by the lines of the poem.
+ This worked the first time (for a change).
+*/
+<DEFAULT> TOKEN : {
+  <POEM_BEGIN: "@" > : POEM_STATE  /* Transition to a non-default lexical state. */
+}
+
+
+
+
+/* Manage the different roles played by NL. */
+<NL_MANAGER_STATE> TOKEN : {
+  <SECOND_NL: "\r\n" > { log("After NL: reposition:"); } : DEFAULT /*End of para found. Return to default state. */
+}
+
+<NL_MANAGER_STATE> MORE : {
+ <NEXT_LINE_OF_TEXT: ~["\r", "\n"] > { log("After NL: more text:"); }: DEFAULT /* Next line of text, appended to next token. Return to default state. */
+}
+
+/*
+ Italics.
+   First '_': enter a new lexical state, just for italics.
+   Second '_':  go back to the default state.
+   Not Control: the text to be italicized.
+   Same monkey business with the NLs, as in regular text.
+*/
+
+
+/* One stanza of a poem. Each line ends with NL. The stanza ends with NL NL. */
+<POEM_STATE> TOKEN : {
+  <POEM : (<POEM_LINE>)+ "\r\n"> : DEFAULT  /* End of the poem stanza. Go back to the default lexical state. */
+}
+
+<POEM_STATE> TOKEN : {
+  <POEM_LINE: (<NOT_CONTROL>)+ "\r\n">  /* (No italics in the body of the poem.) */
+}
