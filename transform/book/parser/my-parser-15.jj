@@ -112,6 +112,11 @@ SKIP : { "\t" }
  <#NOT_CONTROL: ~["~","@","^", "_", "\r", "\n"] >
 }
 
+<*> TOKEN : {
+ <#NOT_CONTROL_BUT_ALLOW_NL: ~["~","@","^", "_"] >
+}
+
+
 /* 
   In the DEFAULT lexical state, the NL's at the end of lines are spurious, but the NL NL at the end of paragraphs are not. 
   The problem is how to distinguish those two cases. 
@@ -141,7 +146,7 @@ SKIP : { "\t" }
 }
 
 <DEFAULT> TOKEN : {
- <ITALIC_TEXT: "_" (<NOT_CONTROL>)+ "_" >
+ <ITALIC_TEXT: "_" (<NOT_CONTROL_BUT_ALLOW_NL>)+ "_" >
 }
 
 
@@ -165,15 +170,6 @@ SKIP : { "\t" }
 <NL_MANAGER_STATE> MORE : {
  <NEXT_LINE_OF_TEXT: ~["\r", "\n"] > { log("After NL: more text:"); }: DEFAULT /* Next line of text, appended to next token. Return to default state. */
 }
-
-/*
- Italics.
-   First '_': enter a new lexical state, just for italics.
-   Second '_':  go back to the default state.
-   Not Control: the text to be italicized.
-   Same monkey business with the NLs, as in regular text.
-*/
-
 
 /* One stanza of a poem. Each line ends with NL. The stanza ends with NL NL. */
 <POEM_STATE> TOKEN : {

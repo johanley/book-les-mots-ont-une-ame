@@ -174,6 +174,9 @@ If it represents a relationship between words, make it a grammar production.'
 
 AI recommends: 'Keep the lexer dumb, and the parser smart.'
 
+In simple cases, it's possible to use only the lexer, in order to get at the sequence of tokens.
+That's reasonable iff you trust that the source data has the correct syntax.
+
 Parser construction is simplified if you separate characters into two bags: 
 - control / typesetting
 - regular text flow
@@ -194,13 +197,8 @@ The snippet of code you see in docs for viewing all of the tokens in the stream:
       log("Token: '" + t.image + "'");
       ++numTokensFound;
     }`
-    
-This code snippet fails when the input is from a file. 
-It barfs on the final EOF.
-You have a choice:
-- do nothing about it, but just be aware of it
-- read the file content into a String, and pass a StringReader into the tokenizer    
 
+Tokens are chained together, and know their neighbour.    
 
 Be careful with where the 'main' method goes: either the parser, or the TokenManager.
 For listing the detected tokens, it seems to make sense to put that code in the TokenManager class, using TOKEN_MGR_DECLS.
