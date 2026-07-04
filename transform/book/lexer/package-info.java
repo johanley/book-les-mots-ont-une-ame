@@ -7,7 +7,9 @@
  <P>The source text needs minor changes for poems and letters (correspondance).
  Poems need to both start and end with '@', while  letters start and end with '^'.
  Since there aren't many of these, it shouldn't be too onerous.
- You'll need to grep the source tree for @ and ^ chars: `grep -r '\^ *.1252`
+ You'll need to grep the source tree for @ and ^ characters.
+ 
+ <P>Example, run in the top directory: `grep -r "\^" .`
  
  <p>References:
  <ul>

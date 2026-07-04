@@ -2,6 +2,7 @@ package book.lexer;
 
 import static book.lexer.BookLexerConstants.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,17 +34,17 @@ public final class PostScriptAssembler {
   public static void main(String[] args) throws IOException, ParseException {
     PostScriptAssembler psAssembler = new PostScriptAssembler();
     
-    String bodyFile = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\lexer\\simple-text-17.1252";
-    String ps = psAssembler.transformBodyIntoPostScript(bodyFile, true);
+    //String bodyFile = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\lexer\\simple-text-17.1252";
+    //String ps = psAssembler.transformBodyIntoPostScript(bodyFile, true);
     
     //String bodyFile = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\01\\body-La-Rempailleuse.1252";
     //String chapterDir = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\01\\";
     
-    /*
-    String bookDir = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\";
-    String ps = psAssembler.transformBookIntoPostScript(bookDir, false);
-    */
-    log(ps);
+    String inputDir = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\";
+    log("Transforming book content into PostScript. Input from: " + inputDir);
+    String postScript = psAssembler.transformBookIntoPostScript(inputDir, false);
+    psAssembler.saveTo1252File(postScript, "book-content-ps.1252", "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\output\\");
+    log("Done.");
   }
   
   String transformBookIntoPostScript(String dir, boolean logTokens)  throws ParseException, IOException {
@@ -105,6 +106,15 @@ public final class PostScriptAssembler {
     Path path = Paths.get(sourceFile);
     List<String> lines = Files.readAllLines(path, ENCODING);
     return titleFor(lines.get(0).trim());
+  }
+  
+  /** Save the final PostScript to a file (windows-1252 encoding) in the given directory. */
+  void saveTo1252File(String ps, String fileName, String dirName) throws IOException {
+    Path path = Path.of(dirName, fileName);
+    log("Saving output PostScript to " + path);
+    try (BufferedWriter writer = Files.newBufferedWriter(path, ENCODING)){
+      writer.write(ps);
+    }
   }
 
   /** The final PostScript code created by this class. */ 
