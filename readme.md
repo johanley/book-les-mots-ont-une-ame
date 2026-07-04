@@ -155,7 +155,8 @@ Selected 8859-1 characters, octal (hex)
 - extra line: '~~~~'
 - | at the start of Mademoiselle Perle? Some kind of section separator, I think.
 - italic: underscores, as in  _Jean-Guiton_ in L'Epave.
-- correspondance: an example in L'Enfant, Decouverte. '^'. Perhaps it means indentation?
+- correspondance: an example in L'Enfant. '^'. Perhaps it means indentation?
+  It has both '^' and '^120'
 - poetry: an example in Le Lit. '@'
 
 

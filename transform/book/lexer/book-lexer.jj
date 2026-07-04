@@ -1,0 +1,99 @@
+options {
+  STATIC=false;
+  JAVA_UNICODE_ESCAPE=true; // the '\u0000' syntax, in case I need it for special characters
+}
+PARSER_BEGIN(BookLexer)
+package book.parser;
+import java.io.*;
+public class BookLexer {
+
+  //THE PARSER HAS NO CONTENT.
+  //I ONLY USE THE LEXER, AND DO A BIT MORE PROCESSING IN JAVA.
+
+  /*
+   JavaCC generates the following constructors for your parser:
+    public MyParser(InputStream)
+    public MyParser(InputStream, String)  the string is an encoding
+    public MyParser(Reader)
+    public MyParser(MyParserTokenManager)
+
+   Options related to encoding:
+    JAVA_UNICODE_ESCAPE 
+    UNICODE_INPUT
+    USER_CHAR_STREAM
+    GRAMMAR_ENCODING
+  */
+
+}
+PARSER_END(BookLexer)
+
+/* THERE IS ONLY THE DEFAULT LEXICAL STATE. */
+
+/* 
+ Skip tabs.
+ ASSUME: weird control codes in the range 0..1F will never be present in the text. 
+*/
+SKIP : { "\t" } 
+
+/*  
+  I separate characters into two bags with no overlap: control-or-typesetting, and regular text flow. 
+
+  Newlines have a triple role, which I'm finding hard to deal with: 
+    - NL is placed 'by accident' simply as convenient line breaks (which almost always aren't the 'real' line breaks you want)
+    - the doubled NL-NL means end-of-paragraph
+    - for poetry '@' and indent '^', the NL is not a convenience, but indeed defines where the line must end
+
+  It would be simpler if NL did not have this triple role. 
+  Two possible solutions: 
+   - cheat: preprocess the source text in some way, such that the ambiguity is removed (my choice here, since the edits are few)
+   - use different lexical states for the various cases.
+*/
+
+/*  THE ORDER OF APPEARANCE OF TOKENS _CAN_ BE VERY IMPORTANT. */
+
+/* Any char except those used for control or typesetting. */
+TOKEN : {
+ <#NOT_CONTROL: ~["~","@","^", "_", "|", "\r", "\n"] >
+}
+
+TOKEN : {
+ <#NOT_CONTROL_BUT_ALLOW_NL: ~["~","@","^", "_", "|"] >
+}
+
+TOKEN : {
+    <NL_NL: "\r\n\r\n">
+  | <NL: "\r\n" >   {matchedToken.image = matchedToken.image.replace("\r\n", " ");}
+}
+
+TOKEN : {
+ <CHARS: (<NOT_CONTROL>)+ >
+}
+
+TOKEN : {
+ <TEXT_LINE: <CHARS> (<NL>)? >
+}
+
+TOKEN : {
+ <TEXT: (<TEXT_LINE>)+ >
+}
+
+TOKEN : {
+ <ITALIC_TEXT: "_" (<NOT_CONTROL_BUT_ALLOW_NL>)+ "_" >
+}
+
+TOKEN : {
+ <CORRESPONDANCE: "^" (<NOT_CONTROL_BUT_ALLOW_NL>)+ "^" > /* defect: no italics in the text of the letter */
+}
+
+TOKEN : {
+ <POEM: "@" (<NOT_CONTROL_BUT_ALLOW_NL>)+ "@" > /* defect: no italics in the body of the poem */
+}
+
+TOKEN : {
+ <BLANK_LINE: "~~~~" <NL_NL> >
+}
+
+TOKEN : {
+ /* the text is assumed to be short enough to fit (centered) on a single line */
+ <CENTER: "|" <CHARS> <NL> >
+}
