@@ -34,16 +34,22 @@ public final class PostScriptAssembler {
   public static void main(String[] args) throws IOException, ParseException {
     PostScriptAssembler psAssembler = new PostScriptAssembler();
     
-    //String bodyFile = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\lexer\\simple-text-17.1252";
-    //String ps = psAssembler.transformBodyIntoPostScript(bodyFile, true);
+    /*
+    String bodyFile = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\lexer\\simple-text-17.1252";
+    String ps = psAssembler.transformBodyIntoPostScript(bodyFile, true);
+    */
     
-    //String bodyFile = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\01\\body-La-Rempailleuse.1252";
-    //String chapterDir = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\01\\";
+    /*
+    String bodyFile = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\04\\body-LEpave.1252";
+    String ps = psAssembler.transformBodyIntoPostScript(bodyFile, true);
+    log(ps);
+    */
     
     String inputDir = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\";
     log("Transforming book content into PostScript. Input from: " + inputDir);
     String postScript = psAssembler.transformBookIntoPostScript(inputDir, false);
     psAssembler.saveTo1252File(postScript, "book-content-ps.1252", "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\output\\");
+    
     log("Done.");
   }
   
@@ -150,7 +156,7 @@ public final class PostScriptAssembler {
       sb.append(proc("R " + poemLines(token.image) + " true STANZA"));
     }
     else if (token.kind == CENTER) {
-      sb.append(proc(string(stripFirstAndLast(nlToSpace(token.image))) + " CENTER"));
+      sb.append(proc(string(stripFirstAndLast(nlToSpace(token.image))) + " SECTION"));
     }
     else if (token.kind == CORRESPONDANCE) {
       sb.append( proc(correspondanceParts(token.image) + " CORRESPONDANCE")  );

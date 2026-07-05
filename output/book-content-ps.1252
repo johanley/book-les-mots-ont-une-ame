@@ -277,7 +277,7 @@
 
 [
  { (Mademoiselle Perle) NEW-CHAPTER } 
- { (I) CENTER } 
+ { (I) SECTION } 
  { NEW-PARA } 
  { R (Quelle singulière idée j’ai eue, vraiment, ce soir-là, de choisir pour reine Mlle Perle. ) PROSE } 
  { NEW-PARA } 
@@ -308,7 +308,7 @@
  { R (Le 15 août, on invite quelques amis, mais aux Rois, je suis le seul convive étranger. ) PROSE } 
  { NEW-PARA } 
  { NEW-PARA } 
- { (II) CENTER } 
+ { (II) SECTION } 
  { NEW-PARA } 
  { R (Donc, cette année, comme les autres années, j’ai été dîner chez les Chantal pour fêter l’Épiphanie. ) PROSE } 
  { NEW-PARA } 
@@ -343,7 +343,7 @@
  { R (J’étais stupéfait de mes observations. On versait du champagne. Je tendis mon verre à la reine, en portant sa santé avec un compliment bien tourné. Elle eut envie, je m’en aperçus, de se cacher la figure dans sa serviette; puis, comme elle trempait ses lèvres dans le vin clair, tout le monde cria: «La reine boit! la reine boit!» Elle devint alors toute rouge et s’étrangla. On riait, mais je vis bien qu’on l’aimait beaucoup dans la maison. ) PROSE } 
  { NEW-PARA } 
  { NEW-PARA } 
- { (III) CENTER } 
+ { (III) SECTION } 
  { NEW-PARA } 
  { R (Dès que le dîner fut fini, Chantal me prit par le bras. C’était l’heure de son cigare, heure sacrée. Quand il était seul, il allait le fumer dans la rue; quand il avait quelqu’un à dîner, on montait au billard, et il jouait en fumant. Ce soir-là, on avait même fait du feu dans le billard, à cause des Rois; et mon vieil ami prit sa queue, une queue très fine qu’il frotta de blanc avec grand soin, puis il dit: ) PROSE } 
  { NEW-PARA } 
@@ -464,7 +464,7 @@
  { R (Ma mère elle-même fut tellement émue par la reconnaissance passionnée et le dévouement un peu craintif de cette mignonne et tendre créature, qu’elle se mit à l’appeler: «Ma fille.» Parfois quand la petite avait fait quelque chose de bon, de délicat, ma mère relevait ses lunettes sur son front, ce qui indiquait toujours une émotion chez elle et elle répétait: «Mais c’est une perle, une vraie perle, cette enfant!» — Ce nom en resta à la petite Claire qui devint et demeura pour nous Mlle Perle. ) PROSE } 
  { NEW-PARA } 
  { NEW-PARA } 
- { (IV) CENTER } 
+ { (IV) SECTION } 
  { NEW-PARA } 
  { R (M. Chantal se tut. Il était assis sur le billard, les pieds ballants, et il maniait une boule de la main gauche, tandis que de la droite il tripotait un linge qui servait à effacer les points sur le tableau d’ardoise et que nous appelions le «linge à craie». Un peu rouge, la voix sourde, il parlait pour lui maintenant, parti dans ses souvenirs, allant doucement, à travers les choses anciennes et les vieux événements qui se réveillaient dans sa pensée, comme on va, en se promenant, dans les vieux jardins de famille où l’on fut élevé, et où chaque arbre, chaque chemin, chaque plante, les houx pointus, les lauriers qui sentent bon, les ifs dont la graine rouge et grasse s’écrase entre les doigts, font surgir, à chaque pas, un petit fait de notre vie passée, un de ces petits faits insignifiants et délicieux qui forment le fond même, la trame de l’existence. ) PROSE } 
  { NEW-PARA } 
@@ -556,7 +556,7 @@
 ] TYPESET
 
 [
- { (L’Epave) NEW-CHAPTER } 
+ { (L’Épave) NEW-CHAPTER } 
  { R (C’était hier, 31 décembre. ) PROSE } 
  { NEW-PARA } 
  { R (Je venais de déjeuner avec mon vieil ami Georges Garin. Le domestique lui apporta une lettre couverte de cachets et de timbres étrangers. ) PROSE } 
@@ -1603,15 +1603,16 @@
  { (L’Enfant) NEW-CHAPTER } 
  { R (Après avoir longtemps juré qu’il ne se marierait jamais, Jacques Bourdillère avait soudain changé d’avis. Cela était arrivé brusquement, un été, aux bains de mer. ) PROSE } 
  { NEW-PARA } 
- { R (Un matin, comme il était étendu sur le sable, tout occupé à regarder les femmes sortir de l’eau, un petit pied l’avait frappe par sa gentillesse et sa mignardise. Ayant levé les yeux plus haut, toute la personne le séduisit. De toute cette personne, il ne voyait d’ailleurs que les chevilles et la tête émergeant d’un peignoir de flanelle blanche, clos avec soin. On le disait sensuel et viveur. C’est donc par la seule grâce de la forme qu’il fut capté d’abord; puis il fut retenu par le charme d’un doux esprit de jeune fille, simple et bon, frais comme les joues et les lèvres. ) PROSE } 
+ { R (Un matin, comme il était étendu sur le sable, tout occupé à regarder les femmes sortir de l’eau, un petit pied l’avait frappé par sa gentillesse et sa mignardise. Ayant levé les yeux plus haut, toute la personne le séduisit. De toute cette personne, il ne voyait d’ailleurs que les chevilles et la tête émergeant d’un peignoir de flanelle blanche, clos avec soin. On le disait sensuel et viveur. C’est donc par la seule grâce de la forme qu’il fut capté d’abord; puis il fut retenu par le charme d’un doux esprit de jeune fille, simple et bon, frais comme les joues et les lèvres. ) PROSE } 
  { NEW-PARA } 
  { R (Présenté à la famille, il plut et il devint bientôt fou d’amour. Quand il apercevait Berthe Lannis de loin, sur la longue plage de sable jaune, il frémissait jusqu’aux cheveux. Près d’elle, il devenait muet, incapable de rien dire et même de penser, avec une espèce de bouillonnement dans le cœur, de bourdonnement dans l’oreille, d’effarement dans l’esprit. Était-ce donc de l’amour, cela? ) PROSE } 
  { NEW-PARA } 
  { R (Il ne le savait pas, n’y comprenait rien, mais demeurait, en tout cas, bien décidé à faire sa femme de cette enfant. ) PROSE } 
  { NEW-PARA } 
  { R (Les parents hésitèrent longtemps, retenus par la mauvaise réputation du jeune homme. Il avait une maîtresse, disait-on, une ) PROSE } 
- { I (vieille maîtresse) PROSE } 
- { R (, une ancienne et forte liaison, une de ces chaînes qu’on croit rompues et qui tiennent toujours. ) PROSE } 
+ { I (vieille maîtresse,) PROSE } 
+ { NEW-PARA } 
+ { R (une ancienne et forte liaison, une de ces chaînes qu’on croit rompues et qui tiennent toujours. ) PROSE } 
  { NEW-PARA } 
  { R (Outre cela, il aimait, pendant des périodes plus ou moins longues, toutes les femmes qui passaient à portée de ses lèvres. ) PROSE } 
  { NEW-PARA } 
@@ -1855,7 +1856,7 @@
 ] TYPESET
 
 [
- { (La-Bûche) NEW-CHAPTER } 
+ { (La Bûche) NEW-CHAPTER } 
  { R (Le salon était petit, tout enveloppé de tentures épaisses, et discrètement odorant. Dans une cheminée large, un grand feu flambait, tandis qu’une seule lampe posée sur le coin de la cheminée versait une lumière molle, ombrée par un abat-jour d’ancienne dentelle, sur les deux personnes qui causaient. ) PROSE } 
  { NEW-PARA } 
  { R (Elle, la maîtresse de la maison, une vieille à cheveux blancs, mais une de ces vieilles adorables dont la peau sans rides est lisse comme un fin papier et parfumée, tout imprégnée de parfums, pénétrée jusqu’à la chair vive par les essences fines dont elle se baigne, depuis si longtemps, l’épiderme: une vieille qui sent, quand on lui baise la main, l’odeur légère qui vous saute à l’odorat lorsqu’on ouvre une boîte de poudre d’iris florentine. ) PROSE } 
@@ -1980,7 +1981,6 @@
  { NEW-PARA } 
  { R (Vous rappelez-vous ces vers que vous m’avez lus, l’autre année, dans quelque poète antique, je ne sais lequel, peut-être le doux Ronsard? ) PROSE } 
  { NEW-PARA } 
- { NEW-PARA } 
  { R [(Et quand au lit nous serons)(Entrelacés, nous ferons)(Les lascifs, selon les guises)(Des amants qui librement)(Pratiquent folâtrement)(Sous les draps cent mignardises.)] true STANZA } 
  { R (Ces vers-là, je les voudrais avoir brodés en ce plafond de mon lit, d’où Pyrame et Thisbé me regardent sans fin avec leurs yeux de tapisserie. ) PROSE } 
  { NEW-PARA } 
@@ -2002,7 +2002,7 @@
 ] TYPESET
 
 [
- { (Le soleil allait disparaître derrière la grande chaîne dont le puy de) NEW-CHAPTER } 
+ { (En Wagon) NEW-CHAPTER } 
  { R (Le soleil allait disparaître derrière la grande chaîne dont le puy de Dôme est le géant, et l’ombre des cimes s’étendait dans la profonde vallée de Royat. ) PROSE } 
  { NEW-PARA } 
  { R (Quelques personnes se promenaient dans le parc, autour du kiosque de la musique. D’autres demeuraient encore assises, par groupes, malgré la fraîcheur du soir. ) PROSE } 
@@ -2296,7 +2296,7 @@
 ] TYPESET
 
 [
- { (Ma-Femme) NEW-CHAPTER } 
+ { (Ma Femme) NEW-CHAPTER } 
  { R (C’était à la fin d’un dîner d’hommes, d’hommes mariés, anciens amis, qui se réunissaient quelquefois sans leurs femmes, en garçons, comme jadis. On mangeait longtemps, on buvait beaucoup; on parlait de tout; on remuait des souvenirs vieux et joyeux, ces souvenirs chauds qui font, malgré soi, sourire les lèvres et frémir le cœur. On disait: ) PROSE } 
  { NEW-PARA } 
  { R (— Te rappelles-tu, Georges, notre excursion à Saint-Germain avec ces deux fillettes de Montmartre? ) PROSE } 
@@ -2617,7 +2617,7 @@
 ] TYPESET
 
 [
- { (Les-Tombales) NEW-CHAPTER } 
+ { (Les Tombales) NEW-CHAPTER } 
  { R (Les cinq amis achevaient de dîner, cinq hommes du monde, mûrs, riches, trois mariés, deux restés garçons. Ils se réunissaient ainsi tous les mois, en souvenir de leur jeunesse, et, après avoir dîné, ils causaient jusqu’à deux heures du matin. Restés amis intimes, et se plaisant ensemble, ils trouvaient peut-être là leurs meilleurs soirs dans la vie. On bavardait sur tout, sur tout ce qui occupe et amuse les Parisiens; c’était entre eux, comme dans la plupart des salons d’ailleurs, une espèce de recommencement parlé de la lecture des journaux du matin. ) PROSE } 
  { NEW-PARA } 
  { R (Un des plus gais était Joseph de Bardon, célibataire et vivant la vie parisienne de la façon la plus complète et la plus fantaisiste. Ce n’était point un débauché ni un dépravé, mais un curieux, un joyeux encore jeune; car il avait à peine quarante ans. Homme du monde dans le sens le plus large et le plus bienveillant que puisse mériter ce mot, doué de beaucoup d’esprit sans grande profondeur, d’un savoir varié sans érudition vraie, d’une compréhension agile sans pénétration sérieuse, il tirait de ses observations, de ses aventures, de tout ce qu’il voyait, rencontrait et trouvait, des anecdotes de roman comique et philosophique en même temps, et des remarques humoristiques qui lui faisaient par la ville une grande réputation d’intelligence. ) PROSE } 
@@ -2772,7 +2772,7 @@
 ] TYPESET
 
 [
- { (La-Patronne) NEW-CHAPTER } 
+ { (La Patronne) NEW-CHAPTER } 
  { R (J’habitais alors, dit Georges Kervelen, une maison meublée, rue des Saints-Pères. ) PROSE } 
  { NEW-PARA } 
  { R (Quand mes parents décidèrent que j’irais faire mon droit à Paris, de longues discussions eurent lieu pour régler toutes choses. Le chiffre de ma pension avait été d’abord fixé à deux mille cinq cents francs, mais ma pauvre mère fut prise d’une peur qu’elle exposa à mon père: «S’il allait dépenser mal tout son argent et ne pas prendre une nourriture suffisante, sa santé en souffrirait beaucoup. Ces jeunes gens sont capables de tout.» ) PROSE } 
@@ -2886,7 +2886,7 @@
 ] TYPESET
 
 [
- { (Un-Sage) NEW-CHAPTER } 
+ { (Un Sage) NEW-CHAPTER } 
  { R (Blérot était mon ami d’enfance, mon plus cher camarade; nous n’avions rien de secret. Nous étions liés par une amitié profonde des cœurs et des esprits, une intimité fraternelle, une confiance absolue l’un dans l’autre. Il me disait ses plus délicates pensées, jusqu’à ces petites hontes de la conscience qu’on ose à peine s’avouer à soi-même. J’en faisais autant pour lui. ) PROSE } 
  { NEW-PARA } 
  { R (J’avais été confident de toutes ses amours. Il l’avait été de toutes les miennes. ) PROSE } 
