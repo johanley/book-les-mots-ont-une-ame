@@ -27,7 +27,7 @@ import java.util.List;
  
  <P>The syntax of the input 'body' text is here assumed to be correct (and compatible with the windows-1252 encoding).
  The job here is not to check the syntax, but to transform the input into valid PostScript snippets. 
- That can be done just by reacting to each token in sequence, as found in the source text.
+ This can be done just by reacting to each token in sequence, as found in the source text.
 */
 public final class PostScriptAssembler {
   
@@ -51,11 +51,15 @@ public final class PostScriptAssembler {
     StringBuilder res = new StringBuilder();
     File startingDir= new File(dir);
     File[] filesAndDirs = startingDir.listFiles();
+    int countChapters = 0;
     for (File item : filesAndDirs) {
       if (item.isDirectory()) {
+        log(item.getCanonicalPath());
         res.append(transformChapterIntoPostScript(item.getCanonicalPath(), logTokens) + NEW_LINE + NEW_LINE);
+        ++countChapters;
       }
     }
+    log("Num chapters: " + countChapters);
     return res.toString();
   }
 
@@ -67,9 +71,11 @@ public final class PostScriptAssembler {
     for(File file : filesAndDirs){
       if (file.getName().startsWith("body")) {
         bodyFile = file;
+        log("  " + bodyFile.getName());
       }
       else if (file.getName().startsWith("title")) {
         titleFile = file;
+        log("  " + titleFile.getName());
       }
       else {
         log("Unexpected file name: " + file.getName());
@@ -86,13 +92,14 @@ public final class PostScriptAssembler {
     @param logTokens logs each token's content, iff set to true. 
   */ 
   String transformBodyIntoPostScript(String sourceFile, boolean logTokens) throws ParseException, IOException {
+    StringBuilder sb = new StringBuilder();
     InputStream is = new FileInputStream(sourceFile);
     Reader r = new InputStreamReader(is, ENCODING);
     JavaCharStream jcs = new JavaCharStream(r);
     BookLexerTokenManager mgr = new BookLexerTokenManager(jcs);
     for(Token t = mgr.getNextToken(); t.kind != BookLexerTokenManager.EOF; t = mgr.getNextToken()) {
       if (logTokens) log("Token " + t.kind + ": " + BookLexerConstants.tokenImage[t.kind] + " '" + t.image + "'" );
-      translate(t);
+      translate(t, sb);
     }
     return sb.toString();
   }
@@ -117,11 +124,6 @@ public final class PostScriptAssembler {
     }
   }
 
-  /** The final PostScript code created by this class. */ 
-  @Override public String toString() {
-    return sb.toString();
-  }
-  
   private static final Charset ENCODING = Charset.forName("windows-1252");
   private static final String NEW_LINE = System.lineSeparator();
   
@@ -133,7 +135,7 @@ public final class PostScriptAssembler {
     return proc(string(text) + " NEW-CHAPTER");
   }
   
-  private void translate(Token token) {
+  private void translate(Token token, StringBuilder sb) {
     //perhaps my tokens could be improved, such that only 1 'kind' is referenced here, instead of 3
     if (token.kind == TEXT | token.kind == TEXT_LINE | token.kind == CHARS) {
       sb.append(proc("R " + string(nlToSpace(token.image))  +" PROSE"));
@@ -151,7 +153,7 @@ public final class PostScriptAssembler {
       sb.append(proc(string(stripFirstAndLast(nlToSpace(token.image))) + " CENTER"));
     }
     else if (token.kind == CORRESPONDANCE) {
-      sb.append( proc(correspondanceParts(token.image) + " LETTER")  );
+      sb.append( proc(correspondanceParts(token.image) + " CORRESPONDANCE")  );
     }
   }
 
@@ -173,11 +175,20 @@ public final class PostScriptAssembler {
    Limitation: no italics in the text. 
   */
   private String correspondanceParts(String text) {
-    String[] parts = stripFirstAndLast(text.trim()).split(NEW_LINE+NEW_LINE);
+    String[] parts = text.trim().split(NEW_LINE+NEW_LINE);
     String body = string(nlToSpace(parts[1]));
-    String intro = poemLines(parts[0]);  //same logic as the lines in a poem's stanza 
-    String outro = poemLines(parts[2]); 
+    String intro = letterLines(parts[0]);  
+    String outro = letterLines(parts[2]); 
     return intro + " " + body + " " + outro;
+  }
+  
+  private String letterLines(String text) {
+    String res = "";
+    String[] lines = text.replace("^", "").trim().split(NEW_LINE);
+    for(String line : lines) {
+      res = res + string(line);
+    }
+    return array(res);
   }
   
   /** An entire chapter as a PostScript data structure.*/
@@ -185,7 +196,6 @@ public final class PostScriptAssembler {
     return "[" + NEW_LINE + procs + "] TYPESET";
   }
   
-  private StringBuilder sb = new StringBuilder();
   private String string(String text) {
     return "(" + text + ")";
   }
