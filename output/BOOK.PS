@@ -21,17 +21,18 @@
 % Emit page numbers and the book's title.
 % Moves the currentpoint to the top left of the work-box.
 /start-new-page {
-  [/idx] {
-    (Starting new page...) here
-    /page-num idx 3 sub def
-    % WARNING: there are two hard-coded transition points for the page numbers
-    page-num 1 ge  page-num 178 le and {
+  (Starting new page...) here
+  3 sub /page-num defi % in user dict; lives long, gets overwritten
+  
+  % set the work-box; asymmetry in x, to avoid the spine 
+  bleed  MARGIN-X  add  SPINE-AVOIDANCE page-num 2 mod 0 eq {neg} if add 
+  bleed  MARGIN-Y  add
+  translate % the origin to the bottom left of the work-box
+  
+  2 dict begin
+    % WARNING: hard-coded page numbers
+    page-num 1 ge  page-num 123 le  and {
       % show page numbers and title
-      % set the work-box; asymmetry in x, to avoid the spine 
-      bleed  MARGIN-X  add  SPINE-AVOIDANCE page-num 2 mod 0 eq {neg} if add 
-      bleed  MARGIN-Y  add
-      translate % to the bottom left of the work-box
-      
       % first show the page number
       (regular) 90 use-font
       /GAP ht 5 pct def
@@ -48,20 +49,16 @@
         0 GAP rmoveto 
         page-num-str show-right-align
       } ifelse
-      % now show the text
+      % now show the title-text
       wd 50 pct  ht GAP add  moveto 
-      page-num 168 le {TITLE}{INDEX-TITLE}ifelse str-upper-case show-ctr-x
+      TITLE str-upper-case show-ctr-x
       (regular) 100 use-font
-    } {
-      % no page numbers appear, and the centering is a bit different
-      % set the work-box using only the trimmed page, with no margins
-      bleed  bleed  translate % to the bottom left of the work-box
-    }
-    ifelse
+    } 
+    if
     
     0 ht moveto % the top-left of the work-box, as a default currentposition
-    % 0 0 wd ht rectstroke % to see the work-box
-  } def-tmp
+    %0 0 wd ht rectstroke % to see the work-box
+  end
 } bind def
 
 % ax ay str 
@@ -384,12 +381,23 @@
 % New page, with the title of the chapter.
 % Moves the currentpoint about halfway down the page.
 /NEW-CHAPTER {
-  dup here % logging of the chapter name
-  NEW-PAGE
-  wd 50 pct ht 80 pct moveto 
-  (regular) 150 use-font  
-  str-upper-case show-ctr-x % the title 
-  0 ht 70 pct moveto % no indentation!
+  [/chapter-title] {
+    chapter-title here % log the chapter name
+    NEW-PAGE
+    wd 50 pct ht 80 pct moveto 
+    (regular) 150 use-font  
+    chapter-title str-upper-case show-ctr-x 
+    0 ht 70 pct moveto % no indentation!
+    TABLE-OF-CONTENTS chapter-title page-num put
+  } def-tmp
+  
+  % dup here % logging of the chapter name
+  % NEW-PAGE
+  % wd 50 pct ht 80 pct moveto 
+  % (regular) 150 use-font  
+  % str-upper-case show-ctr-x % the title 
+  % 0 ht 70 pct moveto % no indentation!
+  % TABLE-OF-CONTENTS title page-num put
 } bind def
 
 % New-line, and indent a little bit.
@@ -532,6 +540,16 @@
   } def-tmp
 } bind def
 
+% Show the table of contents at the END of the book.
+% uses the TABLE-OF-CONTENTS dict in userdict, which is populated at runtime
+/SHOW-TABLE-OF-CONTENTS {
+  NEW-PAGE
+  (regular) 120 use-font 
+  wd 50 pct ht 15 pct neg rmoveto
+  TABLE-OF-CONTENTS-HEADING show-ctr-x 
+  NEW-LINE 
+  NEW-LINE 
+} bind def
 
 /inch {72 mul} bind def
 /8th-inch {72 mul 8 div} bind def
@@ -554,6 +572,9 @@
   /wd trim-width MARGIN-X 2 mul sub def   
   /ht trim-height MARGIN-Y 2 mul sub def   
   /SPINE-AVOIDANCE 1.5 8th-inch def
+  
+  /TABLE-OF-CONTENTS << >> def  % populated as the book is generated
+  /TABLE-OF-CONTENTS-HEADING (TABLE DES MATIÈRES) def
   
   <<
     /PageSize [page-width  page-height]
@@ -590,19 +611,19 @@
 
   % small title 
   (regular) 130 use-font  
-  trim-width 45 pct 
-  trim-height 80 pct moveto 
+  wd 41 pct 
+  ht 80 pct moveto 
   3 0 TITLE str-upper-case ashow-ctr-x
 
   % font details, link to github 
   (regular) 100 use-font
-  trim-width 50 pct 
-  trim-height 15 pct moveto 
+  wd 50 pct 
+  ht 15 pct moveto 
   (Adobe Caslon Pro 11 \(leading 13.2\)) show-ctr-x
 
   (italic) 100 use-font
-  trim-width 50 pct 
-  trim-height 10 pct moveto 
+  wd 50 pct 
+  ht 10 pct moveto 
   (github.com/johanley/book-les-mots-ont-une-ame) show-ctr-x
 
 showpage
@@ -613,16 +634,16 @@ showpage
 
   % large title and drawing
   (regular) 230 use-font  
-  trim-width 45 pct trim-height 85 pct moveto 
+  wd 42 pct ht 85 pct moveto 
   0.3 em 0 (Les Mots) str-upper-case ashow-ctr-x
-  trim-width 45 pct trim-height 75 pct moveto 
+  wd 42 pct ht 75 pct moveto 
   0.3 em 0 (Ont Une Âme) str-upper-case ashow-ctr-x
   
   % a drawing of a constellation
   gsave 
     % put the origin near the center of the drawing
-    trim-width 50 pct
-    trim-height 46 pct  
+    wd 50 pct
+    ht 46 pct  
     translate 
 
     % manually tweak the scale  
@@ -635,10 +656,10 @@ showpage
   grestore
 
   (regular) 125 use-font  
-  trim-width 50 pct trim-height 15 pct moveto 
+  wd 50 pct ht 15 pct moveto 
   AUTHOR show-ctr-x
-  trim-width 50 pct trim-height 10 pct moveto 
-  DATE show-ctr-x
+  %wd 50 pct ht 10 pct moveto 
+  %DATE show-ctr-x
 
 showpage
 
@@ -3681,8 +3702,7 @@ showpage
  { R (Je me mis à rire franchement. «Comme tu voudras. Allons, mon vieux.») PROSE } 
 ] TYPESET
 
-
-
+SHOW-TABLE-OF-CONTENTS 
 
 % WARNING: YOU MAY HAVE ADD EMPTY PAGES HERE MANUALLY. 
 % SOME PRINTING SERVICES REQUIRE THE NUMBER OF PAGES TO BE AN EVEN MULTIPLE OF 2 or 4.
