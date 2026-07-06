@@ -49,9 +49,9 @@
         0 GAP rmoveto 
         page-num-str show-right-align
       } ifelse
-      % now show the title-text
+      % now show the chapter's title at the top of the page
       wd 50 pct  ht GAP add  moveto 
-      TITLE str-upper-case show-ctr-x
+      CURRENT-CHAPTER-TITLE str-upper-case show-ctr-x
       (regular) 100 use-font
     } 
     if
@@ -381,17 +381,16 @@
 % New page, with the title of the chapter.
 % Moves the currentpoint about halfway down the page.
 /NEW-CHAPTER {
-  [/chap-title] {
-    chap-title here % log the chapter name
-    NEW-PAGE
-    wd 50 pct ht 80 pct moveto 
-    (regular) 150 use-font  
-    chap-title str-upper-case show-ctr-x 
-    0 ht 70 pct moveto % no indentation!
-    % append to the TOC array
-    TABLE-OF-CONTENTS <</chapter-title chap-title /start-page page-num >> append-to-array  % array left on stack
-  } def-tmp
-  /TABLE-OF-CONTENTS defi % outside the def-tmp!
+  /CURRENT-CHAPTER-TITLE defi % visible to the NEW-PAGE proc (userdict)
+  CURRENT-CHAPTER-TITLE here % log it to stdout
+  NEW-PAGE
+  wd 50 pct ht 80 pct moveto 
+  (regular) 150 use-font  
+  CURRENT-CHAPTER-TITLE str-upper-case show-ctr-x 
+  0 ht 70 pct moveto % no indentation!
+  % append to the TOC array
+  TABLE-OF-CONTENTS <</chapter-title CURRENT-CHAPTER-TITLE /start-page page-num >> append-to-array  % [] left on stack
+  /TABLE-OF-CONTENTS defi % redefined
 } bind def
 
 % New-line, and indent a little bit.
@@ -537,21 +536,37 @@
 % Show the table of contents at the END of the book.
 /SHOW-TABLE-OF-CONTENTS {
   NEW-PAGE
-  (regular) 120 use-font 
-  wd 50 pct ht 15 pct neg rmoveto
+  (regular) 100 use-font 
+  wd 50 pct ht 85 pct moveto
   TABLE-OF-CONTENTS-HEADING show-ctr-x 
   NEW-LINE 
   NEW-LINE 
   % [ <</chapter-title (Le Lit) /start-page>> ] cycle over the array.
-  % change the work-area temporarily, to be smaller in width (see STANZA)
   % left align the text, right-align the page numbers
-  % the text is padded with dots .... until it reaches a certain length (found by experiment)
+  % the text is padded with dots .... until it reaches a certain length (found by mere experiment)
   TABLE-OF-CONTENTS {
     % << /chapter-title (Le Lit) /start-page 42 >>
-    /chapter defi % dict
-    chapter /chapter-title == 
-    chapter /start-page == 
+    /chap defi % dict
+    wd 15 pct current-y moveto
+    chap /chapter-title get show
+    { ( .) show
+      current-x  wd 78 pct  gt { exit } if
+    } loop
+    wd 85 pct current-y moveto
+    chap /start-page get 4 string cvs show-right-align
+    NEW-LINE
   } forall
+  
+  % font details, link to github 
+  wd 50 pct 
+  ht 15 pct moveto 
+  (Adobe Caslon Pro 11 \(leading 13.2\)) show-ctr-x
+
+  (italic) 100 use-font
+  wd 50 pct 
+  ht 10 pct moveto 
+  (github.com/johanley/book-les-mots-ont-une-ame) show-ctr-x
+  
 } bind def
 
 % [] item -> []
@@ -645,17 +660,6 @@
   ht 80 pct moveto 
   3 0 TITLE str-upper-case ashow-ctr-x
 
-  % font details, link to github 
-  (regular) 100 use-font
-  wd 50 pct 
-  ht 15 pct moveto 
-  (Adobe Caslon Pro 11 \(leading 13.2\)) show-ctr-x
-
-  (italic) 100 use-font
-  wd 50 pct 
-  ht 10 pct moveto 
-  (github.com/johanley/book-les-mots-ont-une-ame) show-ctr-x
-
 showpage
 
   % blank page 
@@ -693,12 +697,6 @@ showpage
 
 showpage
 
-
-  %QUOTES-FILE
-  %process-quotes-file-one-line-at-a-time 
-  
-  % <</author (Aeschylus) /title (Prometheus Bound) /body [/R(More leisure than I wish is mine.)]>>
-  % <</author (Christopher Alexander) /title (The Nature of Order, Book 1) /body [/R(For twenty years, I spent two or three hours a day looking at pairs of things, comparing them, and asking myself:) /I(Which has more life?)]>>
 
 [
  { (La Rempailleuse) NEW-CHAPTER } 
@@ -827,7 +825,7 @@ showpage
 ] TYPESET
 
 [
- { (L'Infirme) NEW-CHAPTER } 
+ { (L’Infirme) NEW-CHAPTER } 
  { R (Cette aventure m’est arrivée vers 1882. Je venais de m’installer dans le coin d’un wagon vide, et j’avais refermé la portière avec l’espérance de rester seul, quand elle se rouvrit brusquement, et j’entendis une voix qui disait: ) PROSE } 
  { NEW-PARA } 
  { R (— Prenez garde, monsieur, nous nous trouvons juste au croisement des lignes; le marchepied est très haut. ) PROSE } 
@@ -3148,7 +3146,7 @@ showpage
 ] TYPESET
 
 [
- { (L'Aventure de Walter Schnaffs) NEW-CHAPTER } 
+ { (L’Aventure de Walter Schnaffs) NEW-CHAPTER } 
  { R (Depuis son entrée en France avec l’armée d’invasion, Walter Schnaffs se jugeait le plus malheureux des hommes. Il était gros, marchait avec peine, soufflait beaucoup et souffrait affreusement des pieds qu’il avait fort plats et fort gras. Il était en outre pacifique et bienveillant, nullement magnanime ou sanguinaire, père de quatre enfants qu’il adorait et marié avec une jeune femme blonde, dont il regrettait désespérément chaque soir les tendresses, les petits soins et les baisers. Il aimait se lever tard et se coucher tôt, manger lentement de bonnes choses et boire de la bière dans les brasseries. Il songeait en outre que tout ce qui est doux dans l’existence disparaît avec la vie; et il gardait au cœur une haine épouvantable, instinctive et raisonnée en même temps, pour les canons, les fusils, les revolvers et les sabres, mais surtout pour les baïonnettes, se sentant incapable de manœuvrer assez vivement cette arme rapide pour défendre son gros ventre. ) PROSE } 
  { NEW-PARA } 
  { R (Et, quand il se couchait sur la terre, la nuit venue, roulé dans son manteau à côté des camarades qui ronflaient, il pensait longuement aux siens laissés là-bas et aux dangers semés sur sa route: — s’il était tué, que deviendraient les petits? Qui donc les nourrirait et les élèverait? À l’heure même, ils n’étaient pas riches, malgré les dettes qu’il avait contractées en partant pour leur laisser quelque argent. Et Walter Schnaffs pleurait quelquefois. ) PROSE } 
@@ -3731,6 +3729,7 @@ showpage
  { NEW-PARA } 
  { R (Je me mis à rire franchement. «Comme tu voudras. Allons, mon vieux.») PROSE } 
 ] TYPESET
+
 
 SHOW-TABLE-OF-CONTENTS 
 
