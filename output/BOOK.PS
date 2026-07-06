@@ -381,23 +381,17 @@
 % New page, with the title of the chapter.
 % Moves the currentpoint about halfway down the page.
 /NEW-CHAPTER {
-  [/chapter-title] {
-    chapter-title here % log the chapter name
+  [/chap-title] {
+    chap-title here % log the chapter name
     NEW-PAGE
     wd 50 pct ht 80 pct moveto 
     (regular) 150 use-font  
-    chapter-title str-upper-case show-ctr-x 
+    chap-title str-upper-case show-ctr-x 
     0 ht 70 pct moveto % no indentation!
-    TABLE-OF-CONTENTS chapter-title page-num put
+    % append to the TOC array
+    TABLE-OF-CONTENTS <</chapter-title chap-title /start-page page-num >> append-to-array  % array left on stack
   } def-tmp
-  
-  % dup here % logging of the chapter name
-  % NEW-PAGE
-  % wd 50 pct ht 80 pct moveto 
-  % (regular) 150 use-font  
-  % str-upper-case show-ctr-x % the title 
-  % 0 ht 70 pct moveto % no indentation!
-  % TABLE-OF-CONTENTS title page-num put
+  /TABLE-OF-CONTENTS defi % outside the def-tmp!
 } bind def
 
 % New-line, and indent a little bit.
@@ -541,7 +535,6 @@
 } bind def
 
 % Show the table of contents at the END of the book.
-% uses the TABLE-OF-CONTENTS dict in userdict, which is populated at runtime
 /SHOW-TABLE-OF-CONTENTS {
   NEW-PAGE
   (regular) 120 use-font 
@@ -549,7 +542,44 @@
   TABLE-OF-CONTENTS-HEADING show-ctr-x 
   NEW-LINE 
   NEW-LINE 
+  % [ <</chapter-title (Le Lit) /start-page>> ] cycle over the array.
+  % change the work-area temporarily, to be smaller in width (see STANZA)
+  % left align the text, right-align the page numbers
+  % the text is padded with dots .... until it reaches a certain length (found by experiment)
+  TABLE-OF-CONTENTS {
+    % << /chapter-title (Le Lit) /start-page 42 >>
+    /chapter defi % dict
+    chapter /chapter-title == 
+    chapter /start-page == 
+  } forall
 } bind def
+
+% [] item -> []
+% 'append' an item to an array, in the manner of a list.
+% The length of the returned array is 1 greater than the length of the input array.
+/append-to-array {
+  [/list /item] {
+    % make a new result array (len + 1) to hold the expanded data
+    item list-dict 
+    /result list length 1 add array def
+    % copy the existing data into the result, if any
+    list length 0 gt {
+      0 1 list length 1 sub {
+        /idx defi
+        result  idx  list idx get  put
+      } for
+    } if
+    result  list length  item  put
+    result % leave the array on the stack
+  } def-tmp
+} bind def 
+
+% []
+% Show the items in the array on stdout.
+/list-array {
+ { == } forall
+} bind def
+
 
 /inch {72 mul} bind def
 /8th-inch {72 mul 8 div} bind def
@@ -572,9 +602,9 @@
   /wd trim-width MARGIN-X 2 mul sub def   
   /ht trim-height MARGIN-Y 2 mul sub def   
   /SPINE-AVOIDANCE 1.5 8th-inch def
-  
-  /TABLE-OF-CONTENTS << >> def  % populated as the book is generated
+
   /TABLE-OF-CONTENTS-HEADING (TABLE DES MATIÈRES) def
+  /TABLE-OF-CONTENTS [] def % at runtime append a small dict for each chapter: <</chapter-title (L'Enfant) /start-page 53>>
   
   <<
     /PageSize [page-width  page-height]
