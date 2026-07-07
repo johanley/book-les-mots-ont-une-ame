@@ -6,6 +6,61 @@ Tools used:
 - JavaCC parser generator
 - PostScript (Ghostscript)
 
+## What I Learned In This project
+
+In the range 0..127 (0..7F, the range of ASCII), most (but not all) encodings use exactly 
+the same mapping of glyphs to bytes.
+In that case, a file containing such bytes can have multiple valid encodings associated with it.
+
+Two encodings that are *not* the same as ASCII in the range 0..7F:
+- PostScript's built-in StandardEncoding 
+- ISOLatin-1
+
+The difference is just a single glyph/byte: octal 140 (hex 60) is a grave in ASCII, but a quoteleft in 
+both ISOLatin-1 and PostScript's StandardEncoding. 
+(See the PostScript Language Reference Manual, 3rd edition, page 783.)
+Sometimes you see text which mixes a grave with a quoteright, like this: 
+
+`blah blah' 
+
+This might be caused by using ISOLatin-1, and incorrectly expecting it to be ASCII-compatible.
+
+PostScript handles single-byte encodings easily, using its encoding vector (whose length is 256).
+For multiple-byte encodings (Unicode encodings), PostScript can handle them, but with 
+significantly more work (so I hear; I've never tried that myself).
+
+The windows-1252 encoding has more to offer than 8859-1. 
+Its set of glyphs is larger; rounded quotations and em-dashes are very nice to have, but are absent from 8859-1.
+
+Sometimes all you need is a lexer (tokens), not a full parser. 
+If you can assume that the source text is syntactically correct, then using only a lexer can be good enough.
+
+I had trouble trying to build a JavaCC parser for the source text. 
+I eventually gave up, and just used a lexer.
+I had problems removing ambiguity.
+The newline was particularly painful, because it's used in three different ways:
+- an 'accidental' new line in source text prose (which get replaced by single spaces)
+- a paragraph separator
+- a line separator (in the context of poetry).
+
+*The line between lexing and parsing is not always clear-cut*.
+
+In my case, a simple lexer combined with some simple Java code was able to generate 
+the desired PostScript data structures with only a small amount of code. 
+This was a pleasing result.
+
+
+## Notepad++ Encoding Logic Is Problematic For Me
+Notepad++ has a lot of internal logic for encodings under the hood. 
+Perhaps it's best not to rely on it for either detection of encoding or conversion of encoding.
+In Notepad++, 'ANSI' means different things. 
+
+Its 'Convert to...' operations preserve glyphs, while changing bytes that represent those glyphs.
+Above the 'Convert to...' part, operations preserve bytes, but change displayed glyphs.
+** WARNING ** : These are two completely different operations! 
+I find this all rather confusing and unclear for casual use.
+
+## General Notes
 The general flow:
 - find or write the source text (usually with the CP1252 encoding (also known as 'windows-1252')
 - a JavaCC parser reads the text and emits PostScript dictionaries (saved to files) containing the 'runs' of text having the same style
@@ -97,19 +152,7 @@ Windows 1252 has 191 + 27 = 218 visible chars
 - 221..234 (91..9C)
 - 236..377 (9E..FF)
 
-In the range 0..127 (0..7F), the encoding of windows-1252 is the same as UTF-8.
-In that case, a file can have more than one valid encoding associated with it!
-    
 
-## Notepad++ Encoding Logic Is Problematic For Me
-Notepad++ has a lot of internal logic for encodings under the hood. 
-Perhaps it's best not to rely on it for either detection of encoding or conversion of encoding.
-In Notepad++, 'ANSI' means different things. 
-
-Its 'Convert to...' operations preserve glyphs, while changing bytes that represent those glyphs.
-Above the 'Convert to...' part, operations preserve bytes, but change displayed glyphs.
-** WARNING ** : These are two completely different operations! 
-I find this all rather confusing and unclear for casual use.
       
 
 ## Punctuation oddities:
@@ -152,7 +195,7 @@ Selected 8859-1 characters, octal (hex)
 ## Source Text Styling Formats 
 
 - paragraph: blank line
-- extra line: '~~~~'
+- extra line: ~~~~
 - | at the start of Mademoiselle Perle? Some kind of section separator, I think.
 - italic: underscores, as in  _Jean-Guiton_ in L'Epave.
 - correspondance: an example in L'Enfant. '^'. Perhaps it means indentation?
