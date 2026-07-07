@@ -2,14 +2,16 @@
 
 % The body of the book. The cover is a separate PDF.
 
-% Ghostscript command:
+% Ghostscript command to generate the PDF using this file as source:
 %   C:\ghostscript\gs10.04.0\bin\gswin64c.exe -dNOSAFER -sDEVICE=pdfwrite -o BOOK.PDF BOOK.PS
+
+% This project uses the windows-1252 encoding vector. 
 
 (using.ps) run
 (base.ps) using
 (debug.ps) using
 (fonts.ps) using
-(strings.ps) using % string.ps is specific to the CP-1252 encoding.
+(strings.ps) using % a version specific to the CP-1252 encoding
 (table.ps) using
 (text-align.ps) using
 
@@ -70,20 +72,8 @@
   ashow
 } bind def
 
-% dict
-% The dict has author, title, and body (usually an array).
-% Show a quotation, but first test to see if a new page is needed.
-% The policy is that quotations are never split by a page-break.
-/show-quotation-on-1-page {
-  dup 
-  quotation-fits-on-page? not {
-    NEW-PAGE
-  } if
-  show-quotation
-  NEW-LINE % between rendered quotes
-  NEW-LINE 
-} bind def
-
+% REMOVE THIS WHEN DONE. 
+% IT'S HERE ONLY AS A TEMP EXAMPLE.
 % dict
 % The dict has author, title, and body (usually an array).
 /quotation-fits-on-page? {
@@ -102,203 +92,8 @@
   add 0 ge 
 } bind def
 
-% dict
-% The dict has author, title, and body (usually an array).
-/show-quotation {
-  3 dict begin
-    {def} forall
-    body type /arraytype eq{
-      show-body-prose
-    } {
-      show-body-poetry
-    } ifelse
-    show-author-title
-  end
-} bind def
-
-% Cycle through an array containing strings and control-codes. 
-% The control codes can only set the font.
-% Set the currentpoint to the start of the next line, to prepare for the author-title line.
-/show-body-prose {
-  % ragged-right, using the 1/2 word size trick to reduce jaggedness.
-  % use stringwidth, not probe-ahead, to test each word, one at a time.
-  % call new-line, but leave new-page to the caller.
-  body {
-    dup 
-    type /nametype eq {
-      cvx exec
-    } {
-      str-words {
-        /word defi
-        word str-width /word-wd defi
-        /new-x currentpoint pop word-wd add def
-        /line-overflow new-x wd sub def
-        line-overflow  word-wd 2 div  gt { NEW-LINE } if
-        word SPACE str-concat show
-      } forall
-    } ifelse
-  } forall 
-  NEW-LINE
-} bind def
-
-% Show lines of text having hard-coded line breaks, as in poetry.
-% The /body is a single string, with \n-style newlines (such that the whole poem is 1 line of source data).
-% No control codes are used in this style, and only the regular font is used.
-% Set the currentpoint to the start of the next line, to prepare for the author-title line.
-/show-body-poetry {
-  % lines of fixed length, and only regular font
-  (regular) 100 use-font
-  body str-lines {
-    show % one line at a time
-    NEW-LINE % might cause a new page
-  } forall % lines
-} bind def
-
-% str
-% Return true iff the trimmed string has a length > 0
-/is-present? {
-  str-trim length 0 gt
-} bind def
-
-% THIS IS ALREADY IN STRING.PS.
-% str
-% Return the dx of the string (assumes dy is 0).
-/str-width { stringwidth pop } bind def
-
-% Show the author and/or title.
-% Must fit on a single line.
-% The author and title can be an empty string, but not both at the same time.
-% The caller puts the currentpoint at the start of the line, after the quote body has finished.
-% Assumes the author/title data is trimmed of empty spaces.
-/show-author-title {
-  % measure the width first, in order to find the starting point for /show
-  % be careful with the comma in between: three cases: a+comma+space+t, a, t
-  /size 90 def
-  (regular) size use-font
-  /width-all 
-    DASH str-width 
-    small-caps-font
-    author str-upper-case str-width add
-    (italic) size use-font
-    title str-width add 
-  def
-  author is-present? title is-present? and {
-    (regular) size use-font
-    /width-all  width-all COMMA-SPACE str-width  add  def
-  } if
-  wd width-all sub  0  rmoveto
-  
-  (regular) size use-font
-  DASH show
-  author is-present? {
-    small-caps-font
-    author str-upper-case show
-  } if
-  author is-present? title is-present? and {
-    (regular) size use-font
-    COMMA-SPACE show
-  } if
-  title is-present? {
-    (italic) size use-font
-    title show 
-  } if
-  % let's not put a new line here yet; 
-  % we need to interrogate the y-position at this point, for page breaks
-} bind def
-
-
-% THIS SHOULD USE A TEMP DICT
-% str (filename)
-/process-quotes-file-one-line-at-a-time {
-  % open the file read-only; its encoding should be 8859-1.
-  (r) file /quotes-file defi 
-  /buffer MAX-QUOTE-LENGTH string def
-  {
-    quotes-file buffer readline {
-      cvx % the string is scanned and interpreted according to PostScript rules
-      exec % to transform the executable string into a dict, and put it on the stack
-      show-quotation-on-1-page 
-    } {
-      % all quotes end the same way: with a newline, and never with an end-of-file
-      % THE FILE TERMINATES WITH AN UNUSED LINE, that has no newline at its end.
-      %pop 
-      ==
-      exit
-    } ifelse
-  } loop
-  % the loop will automatically close the file once end-of-file has been reached.
-  % this is just being extra-careful
-  quotes-file status {
-    (CLOSING THE OPEN FILE.) == 
-    quotes-file closefile
-  } {
-    (OK: THE FILE WAS CLOSED.) ==
-  } ifelse
-} bind def
-
-% dict
-% The dict contains /author and (usually) /title.
-% Example output:
-%   DYLAN, BOB.......Shelter From The Storm
-% The author is left-justified, the title is right-justified.
-% The title can be absent, but that only happens when the 
-% author has no other entries in the index.
-/show-index-line {
-  2 dict begin
-    { def } forall
-    /size 90 def
-    (regular) size use-font
-    small-caps-font
-    author str-upper-case show
-    title () ne {
-      1 ex 0 rmoveto 
-      (italic) size use-font
-      /DOT (.) def
-      {
-        % emit dots, but stop when you near the title's x-position 
-        currentpoint pop   wd title str-width sub 1 ex sub   ge { exit } if
-        2 ex 0 DOT ashow % stretch out the spacing with /ashow
-      } loop
-      wd 
-      currentpoint exch pop  % y
-      moveto % the right side
-      title show-right-align
-    } if
-    NEW-LINE
-    currentpoint exch pop 0 le { NEW-PAGE } if
-  end
-} bind def
-
-% THIS SHOULD USE A TEMP DICT
-% str (filename)
-/process-index-file-one-line-at-a-time {
-  % open the file read-only; its encoding should be 8859-1.
-  (r) file /index-file defi 
-  /buffer MAX-QUOTE-LENGTH string def
-  {
-    index-file buffer readline {
-      cvx % the string is scanned and interpreted according to PostScript rules
-      exec % to transform the executable string into a dict, and put it on the stack
-      show-index-line 
-    } {
-      % all entries end the same way: with a newline, and never with an end-of-file
-      % THE FILE TERMINATES WITH AN UNUSED LINE, that has no newline at its end.
-      %pop 
-      ==
-      exit
-    } ifelse
-  } loop
-  % the loop will automatically close the file once end-of-file has been reached.
-  % this is just being extra-careful
-  index-file status {
-    (CLOSING THE OPEN INDEX FILE.) == 
-    index-file closefile
-  } {
-    (OK: THE INDEX FILE WAS CLOSED.) ==
-  } ifelse
-} bind def
-
 % [[xy]]
+% Draw a line connecting two stars, when drawing a constellation.
 % The caller will need to set the origin and scale to suitable values, using trial and error.
 /draw-star-line {
   newpath
@@ -312,9 +107,10 @@
 } bind def
 
 % x y stellar-mag
-% two circles at the given location
-% first in the background color, then in the foreground with a smaller radius
-% this will give a pleasing effect when drawing star-points after the star-lines
+% Draw a star, when drawing a constellation.
+% Two circles at the given location.
+% First in the background color, then in the foreground with a smaller radius.
+% This will give a pleasing effect when drawing star-points after the star-lines.
 /draw-star-point {
   newpath
   [/x /y /stellar-mag] {
@@ -328,14 +124,9 @@
   } def-tmp
 } bind def
 
-
-
-
-
-
 % [{...}]  an array of procs
-% THIS IS AN IMPORTANT PROC. IT APPLIES THE TYPESETTING INFORMATION.
-% Each proc does some typesetting operation: managing the font and the currentpoint.
+% THIS IS THE TOP-LEVEL TYPESETTING PROC. IT APPLIES THE TYPESETTING INFORMATION.
+% Each proc does some typesetting operation: managing the font, the currentpoint, and emitting text.
 /TYPESET {
   { exec } forall
 } bind def
@@ -569,11 +360,6 @@
   
 } bind def
 
-% []
-% Show the items in the array on stdout.
-/list-array {
- { == } forall
-} bind def
 
 
 /inch {72 mul} bind def
@@ -608,8 +394,9 @@
   << /NeverEmbed [ ] >> setdistillerparams  % always embed fonts
   true setstrokeadjust  % minimizes off-by-one-pixel line issues
 
-  %C:\Users\Owner\AppData\Local\Microsoft\Windows\Fonts
-  /MyRegular /ACaslonPro-Regular windowize % windows-1252 encoding vector
+  % USE THE windows-1252 ENCODING VECTOR FOR ALL FONTS
+  % C:\Users\Owner\AppData\Local\Microsoft\Windows\Fonts
+  /MyRegular /ACaslonPro-Regular windowize 
   /MyItalic /ACaslonPro-Italic windowize 
   
   << 
@@ -624,15 +411,10 @@
   
   /TITLE (Les Mots Ont Une Âme) def
   /AUTHOR (Guy de Maupassant) def
-  /DATE (2026) def
   /SPACE ( ) def
-  /DASH (~ ) def
-  /COMMA-SPACE (, ) def
-  %/QUOTES-FILE (quotes-data-8859-1/quotes_flat_file_ps.txt) def
-  %/INDEX-FILE (quotes-data-8859-1/index_file_ps.txt) def
-  %/MAX-QUOTE-LENGTH 5000 def 
-  %/INDEX-TITLE (Authors and Titles) def
 %%EndSetup 
+
+
 
   % small title 
   (regular) 130 use-font  
@@ -3716,8 +3498,7 @@ SHOW-TABLE-OF-CONTENTS
 % WARNING: YOU MAY HAVE ADD EMPTY PAGES HERE MANUALLY. 
 % SOME PRINTING SERVICES REQUIRE THE NUMBER OF PAGES TO BE AN EVEN MULTIPLE OF 2 or 4.
 % (I could add code to do this automatically.)
-% Lulu.com: pages div by 4; end with 2 blank pages.
-% 178 + 3 = 181; increase to 184, add 3 blank pages.
+% Lulu.com: pages must be div by 4; must end with 2 blank pages.
 showpage
 
 
