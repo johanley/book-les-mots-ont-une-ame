@@ -39,7 +39,7 @@
 % Return an array of character codes (ints), corresponding to whitespace characters.
 % IMPORTANT: this proc is called by other procs in several places.
 /str-whitespace {
-  0 1 32 { % control codes 0..32, plus space char 32
+  0 1 32 { % control codes 0..31, plus space char 32
     % just leave them on the stack
   } for
   127 % DEL

@@ -569,26 +569,6 @@
   
 } bind def
 
-% [] item -> []
-% 'append' an item to an array, in the manner of a list.
-% The length of the returned array is 1 greater than the length of the input array.
-/append-to-array {
-  [/list /item] {
-    % make a new result array (len + 1) to hold the expanded data
-    item list-dict 
-    /result list length 1 add array def
-    % copy the existing data into the result, if any
-    list length 0 gt {
-      0 1 list length 1 sub {
-        /idx defi
-        result  idx  list idx get  put
-      } for
-    } if
-    result  list length  item  put
-    result % leave the array on the stack
-  } def-tmp
-} bind def 
-
 % []
 % Show the items in the array on stdout.
 /list-array {

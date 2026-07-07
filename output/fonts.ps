@@ -28,7 +28,7 @@
 
 % new-font-name old-font-name 
 % Create a new font from an existing one, which uses the ISOLatin1Encoding instead of the standard encoding.
-% calling this allows (almost all) accented characters in West European languages to be treated as any other character.
+% Calling this allows (almost all) accented characters in West European languages to be treated as any other character.
 % https://stackoverflow.com/questions/270672/unicode-in-postscript
 /latinize {
   findfont
@@ -333,7 +333,7 @@
   1 dict begin
     % log the font information
     /the-new-font exch def
-    (Latinized font. /FontName:) == 
+    (Windowized font. /FontName:) == 
     the-new-font /FontName get == 
     (/FontType:) == 
     the-new-font /FontType get == 
