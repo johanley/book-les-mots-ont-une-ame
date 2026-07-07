@@ -360,7 +360,13 @@
   
 } bind def
 
+% I used this book as a model: "Jerusalem" by Simon Montefiore (Knopf, 2011).
+/DEFAULT-FONT-SIZE 11 def
 
+% 1.2x the default font size (a common choice, and Adobe's default).
+/LEADING {
+  1.2 current-font-size mul
+} bind def 
 
 /inch {72 mul} bind def
 /8th-inch {72 mul 8 div} bind def
@@ -403,11 +409,8 @@
     (regular) /MyRegular
     (italic) /MyItalic
   >>
-  11 % default font size 
+  DEFAULT-FONT-SIZE 
   init-my-fonts
-  
-  % My model: "Jerusalem" by Simon Montefiore (Knopf, 2011)
-  /LEADING 1.2 11 mul def % this is a common leading, 120% of the type size
   
   /TITLE (Les Mots Ont Une Âme) def
   /AUTHOR (Guy de Maupassant) def
