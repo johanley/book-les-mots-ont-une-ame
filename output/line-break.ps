@@ -1,0 +1,100 @@
+
+% LINE-BREAKING ALGORITHMS.
+%
+% These algos assume:
+%  - a curretpoint exists
+%  - a font is currently active
+%  - the language is written from left to right
+%  - a proc named NEW-LINE exists 
+%  - it's okay for a single word to be on the final line
+% 
+% The strings passed to the algos are allowed to have leading/trailing single space character.
+% If present, they're handled as special cases here.
+% 
+% Remarks:
+%  - I've seen many print examples in which expanded-spaces is pushed too far, and find it displeasing.
+%  - hyphenation seems to be the only reasonable way to handle large words.
+% 
+% Demanding a ramrod-straight right hand side is perhaps pushing an idea a bit too far: 
+%  - I see cases (that don't use the Knuth-Pluss algo) which the result is visually a bit off. 
+%  - I wonder if it's useful to look for an algo that allows ragged-right, but limits it somehow
+
+(base.ps) using
+
+% str limit-x -> [unders]
+% Simplest possible algo: insert a line-break if the word would go beyond a given fixed limit.
+% A single word is allowed to be on the final line.
+%
+% Returns an array of the (negative) undershoots of word-ends from the limit-x; callers can use these results
+% to evaluate the effectiveness of this algo (if desired); otherwise, they can just pop it off the stack.
+%
+% No hyphenation, and no changing the width of the space character.
+% (Many websites seem to use this simple algo, but it's rare to see it in print.)
+/line-break-0 {
+  [/str /limit-x] {
+    ( ) /SPACE defi
+    [] /unders defi
+    str SPACE str-starts-with? { SPACE show } if
+
+    str str-words /words defi % split on whitespace
+    0 1  words length 1 sub { 
+      /i defi
+      % overshoot: need a newline iff show-ing the word would go beyond limit-x
+      cp-x  words i get str-width  add  limit-x  gt { 
+        % a space-width is subtracted from cp-x: the previous word had a trailing space
+        unders  cp-x SPACE str-width sub  limit-x sub    append-to-array  % a negative number
+        NEW-LINE 
+      } if 
+      words i get  show
+      i  words length 1 sub  lt { 
+        SPACE show  % trailing space after every non-terminal word
+      } if 
+    } for
+    
+    str SPACE str-ends-with? { SPACE show } if
+    unders % leave on the stack for the caller; the caller will often pop it off
+  } def-tmp
+} bind def
+
+
+% str limit-x -> [under-over]
+% In this version, the fixed limit is not strictly enforced. 
+% A word that passes the limit can sometimes be retained on the line.
+% It's retained on the line iff it overshoots the limit by less than 0.5 the word's length.
+%
+% Returns an array of the (negative/positive) undershoots/overshoots of word-ends from the limit-x; 
+% callers can use these results to evaluate the effectiveness of this algo (if desired); 
+% otherwise, they can just pop it off the stack.
+%
+% No hyphenation, and no changing the width of the space character.
+% 
+% I TRIED THIS ALGO AS AN EXPERIMENT, BUT THE RESULTS AREN'T GREAT: the overshoots 
+% for wide words are just too big.
+/line-break-1 {
+  [/str /limit-x] {
+    ( ) /SPACE defi
+    [] /under-overs defi
+    str SPACE str-starts-with? {SPACE show} if
+    
+    str str-words /words defi % split on whitespace
+    0 1  words length 1 sub {
+      /i defi
+      words i get  /word defi
+      word str-width  /word-wd defi
+      current-x word-wd add  /new-x defi
+      new-x wd sub  /line-overflow defi
+      line-overflow  word-wd 2 div  gt { 
+        % a space-width is subtracted from cp-x: the previous word had a trailing space
+        under-overs  cp-x SPACE str-width sub  limit-x sub    append-to-array  % a negative number
+        NEW-LINE 
+      } if
+      word show 
+      i  words length 1 sub  lt {
+        SPACE show % add a space after all non-terminal words
+      } if
+    } for
+    
+    str SPACE str-ends-with? {SPACE show} if
+    under-overs % leave on the stack for the caller; the caller will often pop it off
+  } def-tmp
+} bind def

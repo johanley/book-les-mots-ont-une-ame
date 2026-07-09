@@ -14,6 +14,7 @@
 (strings.ps) using % a version specific to the CP-1252 encoding
 (table.ps) using
 (text-align.ps) using
+(line-break.ps) using
 
 % int 
 % arg is the number of times /showpage has been called: 0, 1,...
@@ -24,7 +25,7 @@
 % Moves the currentpoint to the top left of the work-box.
 /start-new-page {
   (Starting new page...) here
-  3 sub /page-num defi % in user dict; lives long, gets overwritten
+  3 sub /page-num defi % in currentdict; lives long, gets overwritten
   
   % set the work-box; asymmetry in x, to avoid the spine 
   bleed  MARGIN-X  add  SPINE-AVOIDANCE page-num 2 mod 0 eq {neg} if add 
@@ -59,7 +60,7 @@
     if
     
     0 ht moveto % the top-left of the work-box, as a default currentposition
-    %0 0 wd ht rectstroke % to see the work-box
+    0 0 wd ht rectstroke % to see the work-box
   end
 } bind def
 
@@ -137,11 +138,13 @@
 % Italic font.
 /I { (italic) 100 use-font } bind def
 
+% REMOVE THIS. IT'S IN THE BASE.PS
 % The current y-position.
 /current-y {
   currentpoint exch pop % y
 } bind def
 
+% REMOVE THIS. IT'S IN THE BASE.PS
 % The current x-position.
 /current-x {
   currentpoint pop % x
@@ -212,33 +215,28 @@
 % Emits each word found in the string with a trailing space.
 % An initial or final trailing space is emitted only if str starts or ends with a space.
 % Can force a NEW-LINE/NEW-PAGE.
-/PROSE {
-  [/str] {
-    str SPACE str-starts-with? {SPACE show} if
-    str str-words /words defi % chop into words (all spaces are obliterated)
-    0 1  words length 1 sub {
-      /idx defi
-      words idx get  /word defi
-      word str-width  /word-wd defi
-      current-x word-wd add  /new-x defi
-      new-x wd sub  /line-overflow defi
-      line-overflow  word-wd 2 div  gt { NEW-LINE } if
-      word show 
-      idx  words length 1 sub  lt {
-        SPACE show % add a space after all non-terminal words
-      } if
-    } for
-    str SPACE str-ends-with? {SPACE show} if
-    % % chop the string into [str], an array of words, separating on whitespace
-    % str str-words {
-      % /word defi
-      % word str-width /word-wd defi
-      % /new-x current-x word-wd add def
-      % /line-overflow new-x wd sub def
+% /PROSE {
+  % [/str] {
+    % str SPACE str-starts-with? {SPACE show} if
+    % str str-words /words defi % chop into words (all spaces are obliterated)
+    % 0 1  words length 1 sub {
+      % /idx defi
+      % words idx get  /word defi
+      % word str-width  /word-wd defi
+      % current-x word-wd add  /new-x defi
+      % new-x wd sub  /line-overflow defi
       % line-overflow  word-wd 2 div  gt { NEW-LINE } if
-      % word SPACE str-concat show % always emit each word with a trailing whitespace!
-    % } forall
-  } def-tmp
+      % word show 
+      % idx  words length 1 sub  lt {
+        % SPACE show % add a space after all non-terminal words
+      % } if
+    % } for
+    % str SPACE str-ends-with? {SPACE show} if
+  % } def-tmp
+% } bind def
+/PROSE {
+  wd line-break-0 pop % discard the stats; 3 pages more with writing on them; large undershoots!
+  %wd line-break-1 pop % discard the stats
 } bind def
 
 % [()] bool
@@ -302,26 +300,22 @@
 % Uses the current font.
 % The intro-lines are on the left, the outro-lines are on the right.
 % The intro-outro lines will fit on the line.
-% BE CAREFUL WITH PAGE BREAKS.
+% BE CAREFUL WITH PAGE BREAKS IN THE MIDDLE OF THE LETTER. 
 % The body uses only the current font.
 /CORRESPONDANCE {
-  [/intro /body /outro]{
-    % temp alterations to the work-box; manual restore later
-    wd 10 pct 0 translate
+  % temp alterations to the work-box; manual restore later
+  wd 10 pct 0 translate
+  [/intro /body /outro] {
     /wd wd 80 pct def % this is in a temp dict
     NEW-LINE % there should already be one NL in place
-    intro {
-      3 INDENT show NEW-LINE 
-    } forall
+    intro { 3 INDENT show NEW-LINE } forall
     NEW-LINE
     body PROSE 
     BLANK-LINE
-    outro {
-      25 INDENT show NEW-LINE 
-    } forall
-    wd -10 pct 0 translate % back to where it was
-    NEW-LINE % because the next para has a new-line too
+    outro { 25 INDENT show NEW-LINE } forall
   } def-tmp
+  wd -10 pct 0 translate % back to where it was
+  NEW-LINE % this needs the original work-area, to get the currentpoint correct on the next line
 } bind def
 
 % Show the table of contents at the END of the book.
