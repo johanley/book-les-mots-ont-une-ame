@@ -59,7 +59,7 @@
     if
     
     0 ht moveto % the top-left of the work-box, as a default currentposition
-    % 0 0 wd ht rectstroke % to see the work-box
+    0 0 wd ht rectstroke % to see the work-box
   end
 } bind def
 
@@ -238,12 +238,8 @@
   %wd line-break-1 pop % discard the stats
   %wd 2 em line-break-2 pop % discard the stats
   %wd 2 em 0.75 em line-break-3 % discard the stats
-  wd 2 em  ( ) str-width 0.55 mul    line-break-3 
-} bind def
-% DELETE THIS
-/PROSE-2 {
-  % wd 2 em 0.35 em line-break-3 pop % discard the stats
-  wd  2 em  ( ) str-width 0.5 mul line-break-3 % discard the stats 
+  %wd 2 em  ( ) str-width 0.55 mul    line-break-3 
+  wd 2 em  ( ) str-width 0.55 mul   ( ) str-width 0.04 mul  line-break-4 
 } bind def
 
 % [()] bool
@@ -463,9 +459,6 @@ showpage
   %DATE show-ctr-x
 
   wd 0 pct ht 50 pct moveto
-  %(Hello there everyone, it's just a lovely day out there, now isn't it? Why yes! Yes! I concur. I cannot deny these allegations if impropriety.)  PROSE-2
-  %0.2 em 0 32 (hello there all)  widthshow % with expanded spaces on the line
-
 
 showpage
 

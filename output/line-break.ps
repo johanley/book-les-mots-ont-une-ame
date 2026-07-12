@@ -1,22 +1,27 @@
-% SIMPLE LINE-BREAKING ALGORITHMS.
+% EXPERIMENTS WITH SIMPLE LINE-BREAKING ALGORITHMS.
 %
 % These algos assume:
 %  - a curretpoint exists
 %  - a font is currently active
 %  - the language is written from left to right
 %  - a proc named NEW-LINE exists 
-%  - it's okay for a single word to be on the final line
+%  - it's okay for a single word to be on the final line (perhaps corrected manually)
+%  - it's okay to for a single line to appear on the final page of a chapter (perhaps corrected manually)
 % 
-% The strings passed to the algos are allowed to have leading/trailing single space character.
-% If present, they're handled as special cases here.
-% 
+% Demanding a perfectly straight right hand side, with no option, might be pushing a good idea a bit too far.
+% These algos are experiments to see if I can get a pleasing result with a 'slightly' ragged-right, without using hyphens.
+%
 % Remarks:
-%  - I've seen many print examples in which expanded-spaces is pushed too far, and find it displeasing.
+%  - much of the content on the web seems to be ragged-right.
+%  - I've seen many print examples in which expanded-spaces is pushed too far; I often find it displeasing.
+%  - for me, the goal is to 'never see the algorithm at work'.
 %  - hyphenation seems to be the only reasonable way to handle large words.
-% 
-% Demanding a ramrod-straight right hand side is perhaps pushing an idea a bit too far: 
-%  - I see cases (that don't use the Knuth-Pluss algo) which the result is visually a bit off. 
-%  - I wonder if it's useful to look for an algo that allows ragged-right, but limits it somehow
+%  - the Knuth-Pluss algo gives pleasing results, but many printed books don't seem to be using it.
+%  - I'm getting reasonable results with the final algo below (having the most logic), although the raggedness is 
+%    a bit wider than what I was originally hoping for.
+%
+% The strings passed to the algos are allowed to have a leading/trailing single space character.
+% If present, they're handled as special cases here.
 
 (base.ps) using
 
@@ -261,3 +266,143 @@
     %under-overs % stats left on the stack
   } def-tmp
 } bind def
+
+
+% str limit-x tolerance-x whitecap letter-space-incr -> [under-over]
+% In this version, the fixed limit is not strictly enforced. 
+% A word that passes the limit can sometimes be retained on the line.
+% It's retained on the line iff it doesn't overshoot the window [limit-x + tolerance-x].
+% 
+% Iff the line undershoots the window [limit-x - tolerance-x], then this algo will take remedial steps:
+%  - increase the width of the space character on the line/run (capped by the /whitecap value).
+%  - if the result is STILL short of the window, then the letter spacing is increased UNIFORMLY by /letter-space-incr.
+% I'm looking for pleasing results having these techniques 'win' about two letters each, roughly speaking. 
+% I find it prudent to limit these effects, and to live with the resulting ragged-right text.
+% 
+% The width of the space character is never decreased in this algo.
+%
+% The final line never changes any spacing.
+%
+% This algo is line-at-a-time, not word-at-a-time.
+%
+% Returns an array of the (negative/positive) undershoots/overshoots of word-ends from the limit-x; 
+% callers can use these results to evaluate the effectiveness of this algo (if desired); 
+% otherwise, they can just pop it off the stack.
+%
+% No hyphenation, but allows limited increase of the width of the space character (with no contraction), and 
+% an increase of the letter-spacing (by a uniform amount for all glyphs).
+/line-break-4 {
+  % Use two indexes i, j into an array of words, to track the start/end of a line of text.
+  % With each line, i and j are recomputed, until the whole array is consumed.
+  [/str /limit-x /tolerance-x /whitecap /letter-space-incr] {
+    ( ) /SPACE defi
+    [] /under-overs defi % stats
+    str SPACE str-starts-with? {SPACE show} if
+
+    /words str str-words def % split on whitespace
+    /i 0 def % line-start: index into /words
+    /last-word words length 1 sub def 
+    
+    % Uses the current value of i, and computes j.
+    % WARNING: A run of text can start anywhere in the line! 
+    % For example, a short italicized snippet can appear near the end of the line.
+    % DEFECT: two runs on the same line won't share the same space-character width.
+    /do-one-run {
+      i 1 last-word {
+        /j defi  % end of line (or run)
+        /candidate-endpoint concat-together str-width cp-x add  def
+        candidate-endpoint  limit-x tolerance-x add  le {
+          % inside the window OR precedes the window on the left
+          % a valid last-good word on the line (but there may be more)
+          /endpoint candidate-endpoint def
+        } {
+          % gone past the window on the right
+          j i gt { 
+            j 1 sub  /j defi % back-track one word
+          } { 
+            NEW-LINE % cuz the run starts too near the end of the line
+          } ifelse
+          % there will necessarily be a line after this one
+          exit % the for-loop early
+        } ifelse  
+      } for
+      % I now have i, j, and the good endpoint
+      /space-increment space-incr def
+      space-increment 0 eq {
+        concat-together show 
+      } {
+        expanded-spaces-wins? { % then expand spaces only
+          space-increment 0 32 concat-together widthshow (*) show
+        } { % else expand spaces AND increase letter-spacing
+          space-increment 0 32 letter-space-incr 0 concat-together awidthshow (**) show
+        } ifelse
+      } ifelse
+      j last-word lt {NEW-LINE} if 
+    } bind def
+    
+    % uses i j
+    % concat all the strings between i and j; add a space between words
+    /concat-together {
+      3 dict begin 
+        /string-i-j () def 
+        i 1 j {
+          /idx defi
+          /next-word   
+            words idx get  
+            idx j lt {SPACE str-concat} if  
+          def
+          /string-i-j string-i-j next-word str-concat def
+        } for
+        string-i-j % leave on stack
+      end 
+    } bind def
+    
+    % return a number 0 or more, to be possibly added to the width of the space character,
+    % appropriate for the line i..j; CAP the increase with /whitecap
+    /space-incr {
+      1 dict begin 
+        0 % the default result
+        j last-word lt  % last part is never expanded
+        j i ne  % no expansion if only 1 word
+        and { 
+          /defect 
+            limit-x tolerance-x sub 
+            endpoint sub 
+          def 
+          defect 0 gt {
+            pop % the 0-default
+            defect whitecap gt {
+              whitecap % limit the amount of expansion
+            } {
+              defect j i sub div % defect / num spaces
+            } ifelse
+          } if 
+        } if 
+      end
+    } bind def
+    
+    % return true iff show-ing the (i,j) text with expanded spaces will get cp-x into the window
+    /expanded-spaces-wins? {
+      % calc the x-pos with expanded spaces
+      concat-together str-width        % with normal spaces between words
+      j i sub   space-increment   mul  % num-spaces * space-increment
+      add 
+      cp-x add 
+      limit-x tolerance-x sub ge
+    } bind def
+
+    % the main loop
+    { do-one-run % always at least one run of text
+      %under-overs  cp-x limit-x sub  append-to-array % gather stats
+      j last-word ge {
+        exit % the loop
+      } {
+        j 1 add /i defi % for next line
+      } ifelse 
+    } loop
+    
+    str SPACE str-ends-with? {SPACE show} if
+    %under-overs % stats left on the stack
+  } def-tmp
+} bind def
+
