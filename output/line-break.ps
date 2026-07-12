@@ -1,5 +1,4 @@
-
-% LINE-BREAKING ALGORITHMS.
+% SIMPLE LINE-BREAKING ALGORITHMS.
 %
 % These algos assume:
 %  - a curretpoint exists
@@ -96,5 +95,169 @@
     
     str SPACE str-ends-with? {SPACE show} if
     under-overs % leave on the stack for the caller; the caller will often pop it off
+  } def-tmp
+} bind def
+
+
+% str limit-x tolerance-x -> [under-over]
+% In this version, the fixed limit is not strictly enforced. 
+% A word that passes the limit can sometimes be retained on the line.
+% It's retained on the line iff it overshoots the limit by less than a given value.
+%
+% Returns an array of the (negative/positive) undershoots/overshoots of word-ends from the limit-x; 
+% callers can use these results to evaluate the effectiveness of this algo (if desired); 
+% otherwise, they can just pop it off the stack.
+%
+% No hyphenation, and no changing the width of the space character.
+/line-break-2 {
+  [/str /limit-x /tolerance-x] {
+    ( ) /SPACE defi
+    [] /under-overs defi
+    str SPACE str-starts-with? {SPACE show} if
+    
+    str str-words /words defi % split on whitespace
+    0 1  words length 1 sub {
+      /i defi
+      words i get  /word defi
+      word str-width  /word-wd defi
+      current-x word-wd add  /new-x defi
+      new-x wd sub  /line-overflow defi
+      line-overflow  tolerance-x  gt { 
+        % a space-width is subtracted from cp-x: the previous word had a trailing space
+        under-overs  cp-x SPACE str-width sub  limit-x sub    append-to-array  % a negative number
+        NEW-LINE 
+      } if
+      word show 
+      i  words length 1 sub  lt {
+        SPACE show % add a space after all non-terminal words
+      } if
+    } for
+    
+    str SPACE str-ends-with? {SPACE show} if
+    under-overs % leave on the stack for the caller; the caller will often pop it off
+  } def-tmp
+} bind def
+
+% str limit-x tolerance-x whitecap -> [under-over]
+% In this version, the fixed limit is not strictly enforced. 
+% A word that passes the limit can sometimes be retained on the line.
+% It's retained on the line iff it doesn't overshoot the window [limit-x + tolerance-x].
+% 
+% In addition, this algo CAN increase the width of the space character, but ONLY IF the line 
+% undershoots the window [limit-x - tolerance-x]. The increase in the width of the space character
+% is computed using both the number of spaces in the line, and the distance between the end of the last 
+% word and [limit-x - tolerance-x]; the increase in width is CAPPED by the whitecap value, which 
+% prevents the increase from getting too extreme.
+% 
+% The width of the space character is never decreased in this algo.
+%
+% The final line in a paragraph never increases the width of the space character.
+%
+% This algo is line-at-a-time, not word-at-a-time (as are the procs above).
+%
+% Returns an array of the (negative/positive) undershoots/overshoots of word-ends from the limit-x; 
+% callers can use these results to evaluate the effectiveness of this algo (if desired); 
+% otherwise, they can just pop it off the stack.
+%
+% No hyphenation, but allows limited expansion of the width of the space character (with no contraction).
+/line-break-3 {
+  % Use two indexes i, j into an array of words, to track the start/end of a line of text.
+  % With each line, i and j are recomputed, until the whole array is consumed.
+  [/str /limit-x /tolerance-x /whitecap] {
+    ( ) /SPACE defi
+    [] /under-overs defi % stats
+    str SPACE str-starts-with? {SPACE show} if
+
+    /words str str-words def % split on whitespace
+    /i 0 def % line-start: index into /words
+    /last-word words length 1 sub def 
+    
+    % Uses the current value of i, and computes j.
+    % WARNING: A run of text can start anywhere in the line! 
+    % For example, a short italicized snippet can appear near the end of the line.
+    % DEFECT: two runs on the same line won't share the same space-character width.
+    /do-one-run {
+      i 1 last-word {
+        /j defi  % end of line (or run)
+        /candidate-endpoint concat-together str-width cp-x add  def
+        candidate-endpoint  limit-x tolerance-x add  le {
+          % inside the window OR precedes the window on the left
+          % a valid last-good word on the line (but there may be more)
+          /endpoint candidate-endpoint def
+        } {
+          % gone past the window on the right
+          j i gt { 
+            j 1 sub  /j defi % back-track one word
+          } { 
+            NEW-LINE % cuz the run starts too near the end of the line
+          } ifelse
+          % there will necessarily be a line after this one
+          exit % the for-loop early
+        } ifelse  
+      } for
+      % I now have i, j, and the good endpoint
+      space-incr dup 0 eq {
+        pop concat-together show % no expanded spaces
+      } {
+        % using the character code of the space character:
+        0 32 concat-together widthshow % with expanded spaces
+        % (***) show
+      } ifelse
+      j last-word lt {NEW-LINE} if 
+    } bind def
+    
+    % uses i j
+    % concat all the strings between i and j; add a space between words
+    /concat-together {
+      3 dict begin 
+        /string-i-j () def 
+        i 1 j {
+          /idx defi
+          /next-word   
+            words idx get  
+            idx j lt {SPACE str-concat} if  
+          def
+          /string-i-j string-i-j next-word str-concat def
+        } for
+        string-i-j % leave on stack
+      end 
+    } bind def
+    
+    % return a number 0 or more, to be possibly added to the width of the space character,
+    % appropriate for the line i..j; CAP the increase with /whitecap
+    /space-incr {
+      1 dict begin 
+        0 % the default result
+        j last-word lt  % last part is never expanded
+        j i ne  % no expansion if only 1 word
+        and { 
+          /defect 
+            limit-x tolerance-x sub 
+            endpoint sub 
+          def 
+          defect 0 gt {
+            pop % the 0-default
+            defect whitecap gt {
+              whitecap % limit the amount of expansion
+            } {
+              defect j i sub div % defect / num spaces
+            } ifelse
+          } if 
+        } if 
+      end
+    } bind def
+
+    % the main loop
+    { do-one-run % always at least one run of text
+      %under-overs  cp-x limit-x sub  append-to-array % gather stats
+      j last-word ge {
+        exit % the loop
+      } {
+        j 1 add /i defi % for next line
+      } ifelse 
+    } loop
+    
+    str SPACE str-ends-with? {SPACE show} if
+    %under-overs % stats left on the stack
   } def-tmp
 } bind def

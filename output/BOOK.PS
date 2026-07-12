@@ -31,7 +31,6 @@
   bleed  MARGIN-X  add  SPINE-AVOIDANCE page-num 2 mod 0 eq {neg} if add 
   bleed  MARGIN-Y  add
   translate % the origin to the bottom left of the work-box
-  
   2 dict begin
     % WARNING: hard-coded page numbers
     page-num 1 ge  page-num 123 le  and {
@@ -60,7 +59,7 @@
     if
     
     0 ht moveto % the top-left of the work-box, as a default currentposition
-    0 0 wd ht rectstroke % to see the work-box
+    % 0 0 wd ht rectstroke % to see the work-box
   end
 } bind def
 
@@ -190,7 +189,7 @@
 % New-line, and indent a little bit.
 /NEW-PARA {
   NEW-LINE
-  2 INDENT
+  1 INDENT
 } bind def
 
 % int
@@ -235,8 +234,16 @@
   % } def-tmp
 % } bind def
 /PROSE {
-  wd line-break-0 pop % discard the stats; 3 pages more with writing on them; large undershoots!
+  %wd line-break-0 pop % discard the stats; 3 pages more with writing on them; large undershoots!
   %wd line-break-1 pop % discard the stats
+  %wd 2 em line-break-2 pop % discard the stats
+  %wd 2 em 0.75 em line-break-3 % discard the stats
+  wd 2 em  ( ) str-width 0.55 mul    line-break-3 
+} bind def
+% DELETE THIS
+/PROSE-2 {
+  % wd 2 em 0.35 em line-break-3 pop % discard the stats
+  wd  2 em  ( ) str-width 0.5 mul line-break-3 % discard the stats 
 } bind def
 
 % [()] bool
@@ -315,7 +322,8 @@
     outro { 25 INDENT show NEW-LINE } forall
   } def-tmp
   wd -10 pct 0 translate % back to where it was
-  NEW-LINE % this needs the original work-area, to get the currentpoint correct on the next line
+  % to start the subsequent prose; needs the original work-area, to get the currentpoint correct:
+  NEW-LINE 
 } bind def
 
 % Show the table of contents at the END of the book.
@@ -453,6 +461,11 @@ showpage
   AUTHOR show-ctr-x
   %wd 50 pct ht 10 pct moveto 
   %DATE show-ctr-x
+
+  wd 0 pct ht 50 pct moveto
+  %(Hello there everyone, it's just a lovely day out there, now isn't it? Why yes! Yes! I concur. I cannot deny these allegations if impropriety.)  PROSE-2
+  %0.2 em 0 32 (hello there all)  widthshow % with expanded spaces on the line
+
 
 showpage
 
@@ -3491,6 +3504,7 @@ showpage
 
 
 SHOW-TABLE-OF-CONTENTS 
+
 
 % WARNING: YOU MAY HAVE ADD EMPTY PAGES HERE MANUALLY. 
 % SOME PRINTING SERVICES REQUIRE THE NUMBER OF PAGES TO BE AN EVEN MULTIPLE OF 2 or 4.

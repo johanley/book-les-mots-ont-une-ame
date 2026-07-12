@@ -49,6 +49,7 @@ In my case, a simple lexer combined with some simple Java code was able to gener
 the desired PostScript data structures with only a small amount of code. 
 This was a pleasing result.
 
+Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
 ## Notepad++ Encoding Logic Is Problematic For Me
 Notepad++ has a lot of internal logic for encodings under the hood. 
