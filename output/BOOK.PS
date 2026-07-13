@@ -234,12 +234,12 @@
   % } def-tmp
 % } bind def
 /PROSE {
-  %wd line-break-0 pop % discard the stats; 3 pages more with writing on them; large undershoots!
-  %wd line-break-1 pop % discard the stats
-  %wd 2 em line-break-2 pop % discard the stats
-  %wd 2 em 0.75 em line-break-3 % discard the stats
-  %wd 2 em  ( ) str-width 0.55 mul    line-break-3 
-  wd 2 em  ( ) str-width 0.55 mul   ( ) str-width 0.04 mul  line-break-4 
+  %wd line-break-0 pop
+  %wd line-break-1 pop 
+  %wd  2 em  line-break-2 pop 
+  wd 2 em 0.75 em line-break-3 
+  %wd 2 em  ( ) str-width 0.55 mul    line-break-3 pop
+  %wd 2 em  ( ) str-width 0.55 mul   ( ) str-width 0.04 mul  line-break-4 pop 
 } bind def
 
 % [()] bool
@@ -3498,6 +3498,10 @@ showpage
 
 SHOW-TABLE-OF-CONTENTS 
 
+count 0 gt {
+  (STUFF LEFT on the operand stack) here 
+  count ==
+} if 
 
 % WARNING: YOU MAY HAVE ADD EMPTY PAGES HERE MANUALLY. 
 % SOME PRINTING SERVICES REQUIRE THE NUMBER OF PAGES TO BE AN EVEN MULTIPLE OF 2 or 4.
