@@ -14,7 +14,7 @@
 (strings.ps) using % a version specific to the CP-1252 encoding
 (table.ps) using
 (text-align.ps) using
-(line-break.ps) using
+(jagged-right.ps) using
 
 % int 
 % arg is the number of times /showpage has been called: 0, 1,...
@@ -234,12 +234,12 @@
   % } def-tmp
 % } bind def
 /PROSE {
-  %wd line-break-0 pop
-  %wd line-break-1 pop 
-  %wd  2 em  line-break-2 pop 
-  wd 2 em 0.75 em line-break-3 
-  %wd 2 em  ( ) str-width 0.55 mul    line-break-3 pop
-  %wd 2 em  ( ) str-width 0.55 mul   ( ) str-width 0.04 mul  line-break-4 pop 
+  %wd jagged-right-0 pop
+  %wd jagged-right-1 pop 
+  %wd  2 em  jagged-right-2 pop 
+  %wd 2 em 0.75 em jagged-right-3 
+  %wd 2 em  ( ) str-width 0.55 mul    jagged-right-3 pop
+  wd 2 em  ( ) str-width 0.55 mul   ( ) str-width 0.04 mul  jagged-right-4 pop 
 } bind def
 
 % [()] bool

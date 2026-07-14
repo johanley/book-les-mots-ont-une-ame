@@ -1,31 +1,40 @@
-% EXPERIMENTS WITH SIMPLE LINE-BREAKING ALGORITHMS.
+% EXPERIMENTS WITH JAGGED-RIGHT LINE-BREAKING ALGORITHMS.
 %
-% These algos assume:
+% These algos are simple experiments to see if I can get a pleasing result with 
+% a 'slightly' jagged-right, without using hyphens.
+% 
+% In print, it's almost always the case that smooth-right line-breaking is used.
+% But, to my mind, it's very rare to see pleasing results:
+%  - I can always 'see the algo at work' when spaces are expanded excessively
+%  - well-designed fonts are VERY PICKY about precise relative positions; 
+%    algos that change the size of spaces, or inter-letter spaces, subvert the 
+%    good intentions of the poor font designer.
+%  - my feeling-tone is distinctly 'more calm' when the font is left as intended by the font designer, 
+%    without changing space-widths or inter-letter spacing.
+%
+% Remarks:
+%  - much of the content on the web seems to be jagged-right.
+%  - for me, the goal is to 'never see the algorithm at work', but I'm finding it hard to find examples that do that.
+%  - the Knuth-Pluss algo gives pleasing results, but many printed books don't seem to be using it. I've read that 
+%    Adobe's InDesign uses a proprietary algo.
+%  - I'm getting reasonable results with the final algo below (having the most logic), although the jaggedness is 
+%    a bit wider than what I was originally hoping for.
+%  - hyphenation seems to be the only reasonable way to handle the largest words.
+%
+% These algos assume the following of the PostScript context:
 %  - a curretpoint exists
 %  - a font is currently active
 %  - 'wd' defines the nominal right-hand limit (the width of a 'work-area')
 %  - the language is written from left to right
 %  - a proc named NEW-LINE exists 
+% 
+% It also assumes:
+%  - no hyphenation is being used
 %  - it's okay for a single word to be on the final line (perhaps corrected manually)
 %  - it's okay to for a single line to appear on the final page of a chapter (perhaps corrected manually)
 % 
-% Demanding a perfectly straight right hand side, with no option, might be pushing a good idea a bit too far.
-% These algos are simple experiments to see if I can get a pleasing result with a 'slightly' ragged-right, 
-% without using hyphens.
-%
-% Remarks:
-%  - much of the content on the web seems to be ragged-right.
-%  - I've seen many print examples in which expanded-spaces is pushed too far; I often find it displeasing.
-%  - for me, the goal is to 'never see the algorithm at work'.
-%  - hyphenation seems to be the only reasonable way to handle large words.
-%  - the Knuth-Pluss algo gives pleasing results, but many printed books don't seem to be using it.
-%  - I'm getting reasonable results with the final algo below (having the most logic), although the raggedness is 
-%    a bit wider than what I was originally hoping for.
-%
 % The strings passed to the algos are allowed to have a leading/trailing single space character.
 % If present, they're handled as special cases here.
-
-% CHANGE 'UNDERS' TO 'STATS'.
 
 (base.ps) using
 
@@ -38,7 +47,7 @@
 %
 % No hyphenation, and no changing the width of the space character.
 % (Many websites seem to use this simple algo, but it's rare to see it in print.)
-/line-break-0 {
+/jagged-right-0 {
   [/str /limit-x] {
     ( ) /SPACE defi
     [] /stats defi
@@ -77,7 +86,7 @@
       stats
       cp-x 
       has-trailing-sp? {SPACE str-width sub} if 
-      limit-x sub   % raggedness: +/- deviation from limit-x
+      limit-x sub   % jaggedness: +/- deviation from limit-x
       append-to-array  
     def  
   } def-tmp
@@ -97,7 +106,7 @@
 % 
 % I TRIED THIS ALGO AS AN EXPERIMENT, BUT THE RESULTS ARE DISPLEASING: for the largest words,
 % the overshoot is just too big.
-/line-break-1 {
+/jagged-right-1 {
   [/str /limit-x] {
     ( ) /SPACE defi
     [] /stats defi
@@ -136,7 +145,7 @@
 % otherwise, they can just pop it off the stack.
 %
 % No hyphenation, and no changing the width of the space character.
-/line-break-2 {
+/jagged-right-2 {
   [/str /limit-x /tolerance-x] {
     ( ) /SPACE defi
     [] /stats defi
@@ -167,7 +176,7 @@
 % str limit-x tolerance-x whitecap -> [under-over]
 %
 % As in line-break-4, but with 0 for letter-space-incr.
-/line-break-3 {
+/jagged-right-3 {
   0 line-break-4 
 } bind def
 
@@ -183,7 +192,7 @@
 %  - if the result is STILL short of the window, then the letter spacing is increased UNIFORMLY by /letter-space-incr.
 %
 % I would like these techniques to 'win' about two letters-width each, roughly speaking. 
-% Personally, I find it prudent to limit these effects, and to live with the resulting ragged-right text.
+% Personally, I find it prudent to limit these effects, and to live with the resulting jagged-right text.
 % Spacing is only increased in this algo, never decreased.
 %
 % The final line never changes any spacing.
@@ -197,7 +206,7 @@
 %
 % No hyphenation, but allows limited increase of the width of the space character (with no contraction), and 
 % an increase of the letter-spacing (by a uniform amount for all glyphs).
-/line-break-4 {
+/jagged-right-4 {
   % Use two indexes i, j into an array of words, to track the start/end of a line/run of text.
   % With each line, i and j are recomputed, until the whole array is consumed.
   [/str /limit-x /tolerance-x /whitecap /letter-space-incr] {
