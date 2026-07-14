@@ -4,13 +4,13 @@
 % a 'slightly' jagged-right, without using hyphens.
 % 
 % In print, it's almost always the case that smooth-right line-breaking is used.
-% But, to my mind, it's very rare to see pleasing results:
+% In my experience, it's very rare to see pleasing results:
 %  - I can always 'see the algo at work' when spaces are expanded excessively
 %  - well-designed fonts are VERY PICKY about precise relative positions; 
 %    algos that change the size of spaces, or inter-letter spaces, subvert the 
-%    good intentions of the poor font designer.
-%  - my feeling-tone is distinctly 'more calm' when the font is left as intended by the font designer, 
-%    without changing space-widths or inter-letter spacing.
+%    good intentions of the font designer.
+%  - my feeling-tone is distinctly more calm when the font is left as intended by 
+%    the font designer, without horizontal distortions.
 %
 % Remarks:
 %  - much of the content on the web seems to be jagged-right.
@@ -41,9 +41,6 @@
 % str limit-x -> [stats]
 % Simplest possible algo: insert a line-break if the word would go beyond a given fixed limit.
 % A single word is allowed to be on the final line.
-%
-% Returns an array of the (negative) undershoots of word-ends from the limit-x; callers can use these results
-% to evaluate the effectiveness of this algo (if desired); otherwise, they can just pop it off the stack.
 %
 % No hyphenation, and no changing the width of the space character.
 % (Many websites seem to use this simple algo, but it's rare to see it in print.)
@@ -101,11 +98,9 @@
 % Returns an array of the (negative/positive) undershoots/overshoots of word-ends from the limit-x; 
 % callers can use these results to evaluate the effectiveness of this algo (if desired); 
 % otherwise, they can just pop it off the stack.
-%
-% No hyphenation, and no changing the width of the space character.
 % 
-% I TRIED THIS ALGO AS AN EXPERIMENT, BUT THE RESULTS ARE DISPLEASING: for the largest words,
-% the overshoot is just too big.
+% I TRIED THIS ALGO AS AN EXPERIMENT, BUT THE RESULTS ARE DISPLEASING: 
+% for the largest words, the overshoot is just too big. 
 /jagged-right-1 {
   [/str /limit-x] {
     ( ) /SPACE defi
@@ -136,44 +131,17 @@
 
 
 % str limit-x tolerance-x -> [stats]
-% In this version, the fixed limit is not strictly enforced. 
-% A word that passes the limit can sometimes be retained on the line.
-% It's retained on the line iff it overshoots the limit by less than a given value.
-%
-% Returns an array of the (negative/positive) undershoots/overshoots of word-ends from the limit-x; 
-% callers can use these results to evaluate the effectiveness of this algo (if desired); 
-% otherwise, they can just pop it off the stack.
-%
-% No hyphenation, and no changing the width of the space character.
+% In this version, the fixed limit is expressed as (limit-x + tolerance-x).
+% A word that passes limit-x is retained on the line iff it overshoots limit-x 
+% by less than tolerance-x.
+% 
+% This way of expressing the fixed limit is useful to the caller, but of course 
+% this algo is logically equivalent to the jagged-right-0 proc.
 /jagged-right-2 {
-  [/str /limit-x /tolerance-x] {
-    ( ) /SPACE defi
-    [] /stats defi
-    str SPACE str-starts-with? {SPACE show} if
-    
-    str str-words /words defi % split on whitespace
-    words length 1 sub /last-word  defi 
-    0 1 last-word {
-      /i defi
-      /bare-word  words i get  def
-      /padded-word  bare-word  SPACE str-concat  def
-      bare-word str-width  /bare-word-wd defi
-      cp-x bare-word-wd add  /new-x defi
-      new-x wd sub  /line-overflow defi
-      line-overflow  tolerance-x  gt { 
-        i last-word lt {padded-word} {bare-word} ifelse
-        NEW-LINE 
-      } if
-      i last-word lt {padded-word} {bare-word} ifelse
-      show
-    } for
-    
-    str SPACE str-ends-with? {SPACE show} if
-    stats % left on the stack
-  } def-tmp
+  add jagged-right-0
 } bind def
 
-% str limit-x tolerance-x whitecap -> [under-over]
+% str limit-x tolerance-x whitecap -> [stats]
 %
 % As in line-break-4, but with 0 for letter-space-incr.
 /jagged-right-3 {
