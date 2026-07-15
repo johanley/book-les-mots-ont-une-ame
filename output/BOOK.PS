@@ -234,12 +234,46 @@
   % } def-tmp
 % } bind def
 /PROSE {
-  %wd jagged-right-0 pop
-  %wd jagged-right-1 pop 
-  wd  2 em  jagged-right-2 pop 
-  %wd 2 em 0.75 em jagged-right-3 
-  %wd 2 em  ( ) str-width 0.55 mul    jagged-right-3 pop
-  %wd 2 em  ( ) str-width 0.55 mul   ( ) str-width 0.04 mul  jagged-right-4 pop 
+
+  % jag-min -63.39  jag-max 0 num-space-warp 0 num-ltr-warp 0 em 7.4375  
+  wd jagged-right-0 line-break-stats
+  % wd jagged-right-1 pop  % this is the FAILED one
+  % wd  2 em  jagged-right-2 line-break-stats
+  % wd 2 em 0.75 em jagged-right-3 line-break-stats
+  % wd 2 em  ( ) str-width 0.50 mul    jagged-right-3 line-break-stats
+  
+  % jag-min -53.83  jag-max 15.72 num-space-warp 301 num-ltr-warp 
+  %wd 2 em  ( ) str-width 0.40 mul    jagged-right-3 line-break-stats
+  % jag-min -58.30  jag-max 15.72 num-space-warp 301 num-ltr-warp  em  7.4375
+  %wd 2 em  ( ) str-width 0.20 mul    jagged-right-3 line-break-stats
+  
+  %wd  2 em  ( ) str-width 0.55 mul   ( ) str-width 0.04 mul  jagged-right-4 pop 
+  
+  % jag-min -49.63  jag-max 15.72 num-space-warp 301 num-ltr-warp 101
+  %wd  2 em  ( ) str-width 0.40 mul   ( ) str-width 0.03 mul  jagged-right-4  line-break-stats
+  
+  % jag-min -54.10  jag-max 15.72 num-space-warp 301 num-ltr-warp 184 em 7.4375
+  %wd  2 em  ( ) str-width 0.20 mul   ( ) str-width 0.03 mul  jagged-right-4  line-break-stats
+  
+  % jag-min -55.50  jag-max 15.72 num-space-warp 301 num-ltr-warp 184 em 7.4375  
+  % 2% of the letter width is certainly visible with a side by side comparison
+  %wd  2 em  ( ) str-width 0.20 mul   ( ) str-width 0.02 mul  jagged-right-4  line-break-stats
+  
+} bind def
+
+% [stats]
+% Track the min-max jaggedness.
+/line-break-stats {
+  { % each stat is a dict
+    /stat defi
+    stat /jag get /jagged defi
+    jagged JAGGED-MIN lt { /JAGGED-MIN jagged def  } if
+    jagged JAGGED-MAX gt { /JAGGED-MAX jagged def  } if
+    stat /sp-warp known { /SPACE-WARP-COUNT SPACE-WARP-COUNT 1 add def } if
+    stat /ltr-warp known { /LETTER-WARP-COUNT LETTER-WARP-COUNT 1 add def } if
+  } forall
+  /jagged discard
+  /stat discard
 } bind def
 
 % [()] bool
@@ -360,6 +394,12 @@
 
 % I used this book as a model: "Jerusalem" by Simon Montefiore (Knopf, 2011).
 /DEFAULT-FONT-SIZE 11 def
+
+% stats for the line breaking results
+/JAGGED-MIN 0 def
+/JAGGED-MAX 0 def
+/SPACE-WARP-COUNT 0 def
+/LETTER-WARP-COUNT 0 def
 
 % 1.2x the default font size (a common choice, and Adobe's default).
 /LEADING {
@@ -3502,6 +3542,22 @@ count 0 gt {
   (STUFF LEFT on the operand stack) here 
   count ==
 } if 
+
+(1 em: ) here
+1 em ==
+
+(Jagged min: ) here
+JAGGED-MIN ==
+
+(Jagged max: ) here
+JAGGED-MAX ==
+
+(Num space warp: ) here
+SPACE-WARP-COUNT ==
+
+(Num letter warp: ) here
+LETTER-WARP-COUNT ==
+
 
 % WARNING: YOU MAY HAVE ADD EMPTY PAGES HERE MANUALLY. 
 % SOME PRINTING SERVICES REQUIRE THE NUMBER OF PAGES TO BE AN EVEN MULTIPLE OF 2 or 4.

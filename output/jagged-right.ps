@@ -10,7 +10,7 @@
 %    algos that change the size of spaces, or inter-letter spaces, subvert the 
 %    good intentions of the font designer.
 %  - my feeling-tone is distinctly more calm when the font is left as intended by 
-%    the font designer, without horizontal distortions.
+%    the font designer, without horizontal distortions of any sort
 %
 % Remarks:
 %  - much of the content on the web seems to be jagged-right.
@@ -35,6 +35,12 @@
 % 
 % The strings passed to the algos are allowed to have a leading/trailing single space character.
 % If present, they're handled as special cases here.
+% 
+% The [stats] array returned by these procs lets the caller measure the results.
+% Each stat is a dict with info about each line. The keys are:
+%   /jag : the deviation of the real end-of-text from some fixed value (- to the left, + to the right)
+%   /sp-warp : the added width of the space character (always +)
+%   /ltr-warp: the added width of each letter (always +)
 
 (base.ps) using
 
@@ -59,7 +65,7 @@
       /padded-word  bare-word  SPACE str-concat  def
       cp-x  bare-word str-width  add  limit-x  gt { 
         % overshoots: need a newline 
-        i last-word ne {true more-stats} if
+        i last-word ne {true 0 0 more-stats} if
         NEW-LINE 
       } if
       i last-word lt {padded-word} {bare-word} ifelse
@@ -72,21 +78,26 @@
   } def-tmp
 } bind def
 
-% bool 
-% Helper proc.
+% bool sp-warp ltr-warp
 % The boolean states whether or not to go 'back one space'.
-% Assumes limit-x, stats [], SPACE. 
-% Appends more data to the stats data structure.
+% Helper proc. Assumes limit-x, [stats], SPACE. 
+% Appends data for a line to the [stats].
 /more-stats {
-  [/has-trailing-sp?] {
-    /stats 
-      stats
-      cp-x 
-      has-trailing-sp? {SPACE str-width sub} if 
-      limit-x sub   % jaggedness: +/- deviation from limit-x
-      append-to-array  
-    def  
-  } def-tmp
+  /ltr-warp defi
+  /sp-warp defi
+  /has-trailing-sp? defi
+  /stats
+    stats
+    << 
+      /jag  cp-x  has-trailing-sp? {SPACE str-width sub} if  limit-x sub 
+      sp-warp 0 gt { /sp-warp sp-warp } if
+      ltr-warp 0 gt { /ltr-warp ltr-warp } if
+    >>
+    append-to-array
+  def
+  /has-trailing-sp? discard
+  /sp-warp discard
+  /ltr-warp discard
 } bind def
 
 
@@ -117,7 +128,7 @@
       cp-x bare-word-wd add  /new-x defi
       new-x wd sub  /line-overflow defi
       line-overflow  bare-word-wd 2 div  gt { 
-        i last-word ne {true more-stats} if
+        i last-word ne {true 0 0 more-stats} if
         NEW-LINE 
       } if
       i last-word lt {padded-word} {bare-word} ifelse
@@ -145,7 +156,7 @@
 %
 % As in line-break-4, but with 0 for letter-space-incr.
 /jagged-right-3 {
-  0 line-break-4 
+  0 jagged-right-4 
 } bind def
 
 
@@ -210,20 +221,22 @@
         } ifelse  
       } for
       % I now have i, j, and the good endpoint
-      /space-increment space-incr def
       /the-segment concat-together def
-      space-increment 0 eq {
+      /space-warp space-incr def
+      /ltr-warp 0 def
+      space-warp 0 eq {
         the-segment show % no expansions 
       } {
         letter-space-incr 0 eq   expanded-spaces-wins?  or { 
           % expand spaces
-          space-increment 0 32 the-segment widthshow    (*) show
+          space-warp 0 32 the-segment widthshow   % (*) show
         } { 
           % expand spaces AND letter-spacing
-          space-increment 0 32 letter-space-incr 0 the-segment awidthshow    (**) show
+          /ltr-warp letter-space-incr def
+          space-warp 0 32 ltr-warp 0 the-segment awidthshow   % (**) show
         } ifelse
       } ifelse
-      j last-word lt {false more-stats  NEW-LINE} if 
+      j last-word lt {false space-warp ltr-warp  more-stats  NEW-LINE} if 
     } bind def
     
     % uses i, j, words
@@ -245,8 +258,8 @@
     } bind def
     
     % uses i, j, last-word, endpoint
-    % return a number 0 or more, to be possibly added to the width of the space character,
-    % appropriate for the segment i..j; CAP the increase with /whitecap
+    % Return a number 0 or more, to be possibly added to the width of the space character,
+    % appropriate for the segment i..j; CAP the increase with /whitecap.
     /space-incr {
       2 dict begin 
         0 % the default result
@@ -269,11 +282,11 @@
       end
     } bind def
     
-    % uses i, j, space-increment
-    % return true iff show-ing the (i,j) text with expanded spaces will get cp-x into the window
+    % uses i, j, space-warp
+    % Return true iff show-ing the (i,j) text with expanded spaces will get cp-x into the window.
     /expanded-spaces-wins? {
-      concat-together str-width        % with normal spaces between words
-      j i sub   space-increment   mul  % num-spaces * space-increment
+      concat-together str-width   % with normal spaces between words
+      j i sub   space-warp   mul  % num-spaces * space-increment
       add 
       cp-x add 
       limit-x tolerance-x sub ge
