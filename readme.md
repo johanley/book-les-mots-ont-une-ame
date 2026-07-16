@@ -8,6 +8,34 @@ Tools used:
 
 ## What I Learned In This project
 
+Line-breaking seems to be a case of 'pick your poison'. 
+You have to choose what defects you're going to live with.
+The ideal of the algo being invisible doesn't seem to be achievable.
+The assertion that TeX does perfect typesetting is, in my opinion, not true.
+
+Line breaking algorithms make use of these techniques to change horizontal length of a line:
+- distorting the width of the space character
+- distorting the horizontal space between glyphs ('glyph width' in PostScript lingo; 'letter spacing', or 'tracking' elsewhere)
+- distorting the glyph horizontally ('glyph scaling', using InDesign's lingo; this only affects the width of the glyph)
+- adding hyphens
+- (changing the font size? I haven't seen that anywhere. It might be worth a go. The change in height isn't additive, so to speak.)
+
+The first three all introduce some level of distortion.
+To some extent, they undermine the intent of the font designer.
+They can be implemented in PostScript using the widthshow, awidthshow and makefont operators, respectively.
+I believe InDesign applies the distorting operations in the order used above.
+That is, InDesign will use glyph-scaling only as a last resort in order to get smooth-right text.
+
+(Personally, I'm a bit sick and tired of smooth-right, distorted text. 
+I'm inclined nowadays to use jagged-right text. 
+When I read such text on the web, I enjoy the calm feeling it gives me.
+The long tradition of smooth-right ('justified') text was born in an era when paper was precious and expensive. 
+That's no longer the case.)
+
+Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
+
+In old English text, it's common to see a double space between a period and the start of the next sentence.
+
 In the range 0..127 (0..7F, the range of ASCII), most (but not all) encodings use exactly 
 the same mapping of glyphs to bytes.
 In that case, a file containing such bytes can have multiple valid encodings associated with it.
@@ -49,7 +77,7 @@ In my case, a simple lexer combined with some simple Java code was able to gener
 the desired PostScript data structures with only a small amount of code. 
 This was a pleasing result.
 
-Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
+
 
 ## Notepad++ Encoding Logic Is Problematic For Me
 Notepad++ has a lot of internal logic for encodings under the hood. 

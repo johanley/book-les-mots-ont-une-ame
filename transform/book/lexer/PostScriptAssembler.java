@@ -44,7 +44,7 @@ public final class PostScriptAssembler {
     String ps = psAssembler.transformBodyIntoPostScript(bodyFile, true);
     log(ps);
     */
-    
+
     String inputDir = "C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input\\";
     log("Transforming book content into PostScript. Input from: " + inputDir);
     String postScript = psAssembler.transformBookIntoPostScript(inputDir, false);
@@ -147,7 +147,7 @@ public final class PostScriptAssembler {
       sb.append(proc("R " + string(nlToSpace(token.image))  +" PROSE"));
     }
     else if (token.kind == ITALIC_TEXT) {
-      sb.append(proc("I " + string(nlToSpace(stripFirstAndLast(token.image))) + " PROSE")); 
+      sb.append(proc("I " + string(nlToSpace(strip("_", token.image))) + " PROSE")); 
     }
     else if (token.kind == NL | token.kind == BLANK_LINE) {
       sb.append(proc("NEW-PARA"));
@@ -213,6 +213,10 @@ public final class PostScriptAssembler {
   }
   private String stripFirstAndLast(String text) {
     return text.substring(1, text.length()-1);
+  }
+  /** Replace target with empty space. */ 
+  private String strip(String target, String text) {
+    return text.replace(target, "");
   }
   private String nlToSpace(String text) {
     return text.replace(NEW_LINE, " ");

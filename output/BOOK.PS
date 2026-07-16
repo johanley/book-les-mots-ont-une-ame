@@ -59,7 +59,7 @@
     if
     
     0 ht moveto % the top-left of the work-box, as a default currentposition
-    0 0 wd ht rectstroke % to see the work-box
+    % 0 0 wd ht rectstroke % to see the work-box
   end
 } bind def
 
@@ -189,7 +189,7 @@
 % New-line, and indent a little bit.
 /NEW-PARA {
   NEW-LINE
-  1 INDENT
+  2 INDENT
 } bind def
 
 % int
@@ -236,9 +236,9 @@
 /PROSE {
 
   % jag-min -63.39  jag-max 0 num-space-warp 0 num-ltr-warp 0 em 7.4375  
-  wd jagged-right-0 line-break-stats
+  %wd jagged-right-0 line-break-stats
   % wd jagged-right-1 pop  % this is the FAILED one
-  % wd  2 em  jagged-right-2 line-break-stats
+  wd  2 em  jagged-right-2 line-break-stats
   % wd 2 em 0.75 em jagged-right-3 line-break-stats
   % wd 2 em  ( ) str-width 0.50 mul    jagged-right-3 line-break-stats
   
@@ -271,6 +271,7 @@
     jagged JAGGED-MAX gt { /JAGGED-MAX jagged def  } if
     stat /sp-warp known { /SPACE-WARP-COUNT SPACE-WARP-COUNT 1 add def } if
     stat /ltr-warp known { /LETTER-WARP-COUNT LETTER-WARP-COUNT 1 add def } if
+    /NUM-STATS NUM-STATS 1 add def
   } forall
   /jagged discard
   /stat discard
@@ -396,6 +397,7 @@
 /DEFAULT-FONT-SIZE 11 def
 
 % stats for the line breaking results
+/NUM-STATS 0 def
 /JAGGED-MIN 0 def
 /JAGGED-MAX 0 def
 /SPACE-WARP-COUNT 0 def
@@ -536,9 +538,9 @@ showpage
  { NEW-PARA } 
  { R (Son père était rempailleur et sa mère rempailleuse. Elle n’a jamais eu de logis planté en terre. ) PROSE } 
  { NEW-PARA } 
- { R (Toute petite, elle errait, haillonneuse, vermineuse, sordide. On s’arrêtait à l’entrée des villages, le long des fossés; on dételait la voiture; le cheval broutait; le chien dormait, le museau sur ses pattes; et la petite se roulait dans l’herbe pendant que le père et la mère rafistolaient, à l’ombre des ormes du chemin, tous les vieux sièges de la commune. On ne parlait guère, dans cette demeure ambulante. Après les quelques mots nécessaires pour décider qui ferait le tour des maisons en poussant le cri bien connu : «Remmmpailleur de chaises!» on se mettait à tortiller la paille, face à face ou côte à côte. Quand l’enfant allait trop loin ou tentait d’entrer en relation avec quelque galopin du village, la voix colère du père la rappelait : «Veux-tu bien revenir ici, crapule!» C’étaient les seuls mots de tendresse qu’elle entendait. ) PROSE } 
+ { R (Toute petite, elle errait, haillonneuse, vermineuse, sordide. On s’arrêtait à l’entrée des villages, le long des fossés; on dételait la voiture; le cheval broutait; le chien dormait, le museau sur ses pattes; et la petite se roulait dans l’herbe pendant que le père et la mère rafistolaient, à l’ombre des ormes du chemin, tous les vieux sièges de la commune. On ne parlait guère, dans cette demeure ambulante. Après les quelques mots nécessaires pour décider qui ferait le tour des maisons en poussant le cri bien connu: «Remmmpailleur de chaises!» on se mettait à tortiller la paille, face à face ou côte à côte. Quand l’enfant allait trop loin ou tentait d’entrer en relation avec quelque galopin du village, la voix colère du père la rappelait: «Veux-tu bien revenir ici, crapule!» C’étaient les seuls mots de tendresse qu’elle entendait. ) PROSE } 
  { NEW-PARA } 
- { R (Quand elle devint plus grande, on l’envoya faire la récolte des fonds de sièges avariés. Alors elle ébaucha quelques connaissances de place en place avec les gamins; mais c’étaient alors les parents de ses nouveaux amis qui rappelaient brutalement leurs enfants : «Veux-tu bien venir ici, polisson! Que je te voie causer avec les va-nu-pieds!…» ) PROSE } 
+ { R (Quand elle devint plus grande, on l’envoya faire la récolte des fonds de sièges avariés. Alors elle ébaucha quelques connaissances de place en place avec les gamins; mais c’étaient alors les parents de ses nouveaux amis qui rappelaient brutalement leurs enfants: «Veux-tu bien venir ici, polisson! Que je te voie causer avec les va-nu-pieds!…» ) PROSE } 
  { NEW-PARA } 
  { R (Souvent les petits gars lui jetaient des pierres. ) PROSE } 
  { NEW-PARA } 
@@ -555,7 +557,7 @@ showpage
  { NEW-PARA } 
  { R (Elle ne l’en aima que davantage, séduite, émue, extasiée par cette gloire de l’eau colorée, cette apothéose des cristaux luisants. ) PROSE } 
  { NEW-PARA } 
- { R (Elle garda en elle son souvenir ineffaçable, et, quand elle le rencontra, l’an suivant, derrière l’école, jouant aux billes avec ses camarades, elle se jeta sur lui, le saisit dans ses bras, et le baisa avec tant de violence qu’il se mit à hurler de peur. Alors, pour l’apaiser, elle lui donna son argent : trois francs vingt, un vrai trésor, qu’il regardait avec des yeux agrandis. ) PROSE } 
+ { R (Elle garda en elle son souvenir ineffaçable, et, quand elle le rencontra, l’an suivant, derrière l’école, jouant aux billes avec ses camarades, elle se jeta sur lui, le saisit dans ses bras, et le baisa avec tant de violence qu’il se mit à hurler de peur. Alors, pour l’apaiser, elle lui donna son argent: trois francs vingt, un vrai trésor, qu’il regardait avec des yeux agrandis. ) PROSE } 
  { NEW-PARA } 
  { R (Il le prit et se laissa caresser tant qu’elle voulut. ) PROSE } 
  { NEW-PARA } 
@@ -567,13 +569,13 @@ showpage
  { NEW-PARA } 
  { R (Elle en pleura pendant deux jours; et depuis lors elle souffrit sans fin. ) PROSE } 
  { NEW-PARA } 
- { R (Tous les ans elle revenait; passait devant lui sans oser le saluer et sans qu’il daignât même tourner les yeux vers elle. Elle l’aimait éperdument. Elle me dit : « C’est le seul homme que j’aie vu sur la terre, monsieur le médecin; je ne sais pas si les autres existaient seulement.» ) PROSE } 
+ { R (Tous les ans elle revenait; passait devant lui sans oser le saluer et sans qu’il daignât même tourner les yeux vers elle. Elle l’aimait éperdument. Elle me dit: « C’est le seul homme que j’aie vu sur la terre, monsieur le médecin; je ne sais pas si les autres existaient seulement.» ) PROSE } 
  { NEW-PARA } 
  { R (Ses parents moururent. Elle continua leur métier, mais elle prit deux chiens au lieu d’un, deux terribles chiens qu’on n’aurait pas osé braver. ) PROSE } 
  { NEW-PARA } 
  { R (Un jour, en rentrant dans ce village où son cœur était resté, elle aperçut une jeune femme qui sortait de la boutique Chouquet au bras de son bien-aimé. C’était sa femme. Il était marié. ) PROSE } 
  { NEW-PARA } 
- { R (Le soir même, elle se jeta dans la mare qui est sur la place de la Mairie. Un ivrogne attardé la repêcha, et la porta à la pharmacie. Le fils Chouquet descendit en robe de chambre, pour la soigner, et, sans paraître la reconnaître, la déshabilla, la frictionna, puis il lui dit d’une voix dure : «Mais vous êtes folle! Il ne faut pas être bête comme ça!» ) PROSE } 
+ { R (Le soir même, elle se jeta dans la mare qui est sur la place de la Mairie. Un ivrogne attardé la repêcha, et la porta à la pharmacie. Le fils Chouquet descendit en robe de chambre, pour la soigner, et, sans paraître la reconnaître, la déshabilla, la frictionna, puis il lui dit d’une voix dure: «Mais vous êtes folle! Il ne faut pas être bête comme ça!» ) PROSE } 
  { NEW-PARA } 
  { R (Cela suffit pour la guérir. Il lui avait parlé! Elle était heureuse pour longtemps. ) PROSE } 
  { NEW-PARA } 
@@ -591,28 +593,28 @@ showpage
  { NEW-PARA } 
  { R (Dès qu’il eut compris qu’il avait été aimé de cette vagabonde, de cette rempailleuse, de cette rouleuse, Chouquet bondit d’indignation, comme si elle lui avait volé sa réputation, l’estime des honnêtes gens, son honneur intime, quelque chose de délicat qui lui était plus cher que la vie. ) PROSE } 
  { NEW-PARA } 
- { R (Sa femme, aussi exaspérée que lui, répétait : «Cette gueuse! cette gueuse! cette gueuse!…» sans pouvoir trouver autre chose. ) PROSE } 
+ { R (Sa femme, aussi exaspérée que lui, répétait: «Cette gueuse! cette gueuse! cette gueuse!…» sans pouvoir trouver autre chose. ) PROSE } 
  { NEW-PARA } 
- { R (Il s’était levé; il marchait à grands pas derrière la table, le bonnet grec chaviré sur une oreille. Il balbutiait : «Comprend-on ça, docteur ? Voilà de ces choses horribles pour un homme! Que faire? Oh! si je l’avais su de son vivant, je l’aurais fait arrêter par la gendarmerie et flanquer en prison. Et elle n’en serait pas sortie, je vous en réponds!» ) PROSE } 
+ { R (Il s’était levé; il marchait à grands pas derrière la table, le bonnet grec chaviré sur une oreille. Il balbutiait: «Comprend-on ça, docteur ? Voilà de ces choses horribles pour un homme! Que faire? Oh! si je l’avais su de son vivant, je l’aurais fait arrêter par la gendarmerie et flanquer en prison. Et elle n’en serait pas sortie, je vous en réponds!» ) PROSE } 
  { NEW-PARA } 
- { R (Je demeurais stupéfait du résultat de ma démarche pieuse. Je ne savais que dire ni que faire. Mais j’avais à compléter ma mission. Je repris : «Elle m’a chargé de vous remettre ses économies, qui montent à deux mille trois cents francs. Comme ce que je viens de vous apprendre semble vous être fort désagréable, le mieux serait peut-être de donner cet argent aux pauvres.» ) PROSE } 
+ { R (Je demeurais stupéfait du résultat de ma démarche pieuse. Je ne savais que dire ni que faire. Mais j’avais à compléter ma mission. Je repris: «Elle m’a chargé de vous remettre ses économies, qui montent à deux mille trois cents francs. Comme ce que je viens de vous apprendre semble vous être fort désagréable, le mieux serait peut-être de donner cet argent aux pauvres.» ) PROSE } 
  { NEW-PARA } 
  { R (Ils me regardaient, l’homme et la femme, perclus de saisissement. ) PROSE } 
  { NEW-PARA } 
- { R (Je tirai l’argent de ma poche, du misérable argent de tous les pays et de toutes les marques, de l’or et des sous mêlés. Puis je demandai : «Que décidez-vous?» ) PROSE } 
+ { R (Je tirai l’argent de ma poche, du misérable argent de tous les pays et de toutes les marques, de l’or et des sous mêlés. Puis je demandai: «Que décidez-vous?» ) PROSE } 
  { NEW-PARA } 
- { R (Mme Chouquet parla la première : «Mais, puisque c’était sa dernière volonté, à cette femme… il me semble qu’il nous est bien difficile de refuser.» ) PROSE } 
+ { R (Mme Chouquet parla la première: «Mais, puisque c’était sa dernière volonté, à cette femme… il me semble qu’il nous est bien difficile de refuser.» ) PROSE } 
  { NEW-PARA } 
- { R (Le mari, vaguement confus, reprit : «Nous pourrions toujours acheter avec ça quelque chose pour nos enfants.» ) PROSE } 
+ { R (Le mari, vaguement confus, reprit: «Nous pourrions toujours acheter avec ça quelque chose pour nos enfants.» ) PROSE } 
  { NEW-PARA } 
- { R (Je dis d’un air sec : «Comme vous voudrez.» ) PROSE } 
+ { R (Je dis d’un air sec: «Comme vous voudrez.» ) PROSE } 
  { NEW-PARA } 
- { R (Il reprit : «Donnez toujours, puisqu’elle vous en a chargé; nous trouverons bien moyen de l’employer à quelque bonne œuvre.» ) PROSE } 
+ { R (Il reprit: «Donnez toujours, puisqu’elle vous en a chargé; nous trouverons bien moyen de l’employer à quelque bonne œuvre.» ) PROSE } 
  { NEW-PARA } 
  { R (Je remis l’argent, je saluai, et je partis. ) PROSE } 
  { NEW-PARA } 
  { NEW-PARA } 
- { R (Le lendemain Chouquet vint me trouver et, brusquement : «Mais elle a laissé ici sa voiture, cette… cette femme. Qu’est-ce que vous en faites, de cette voiture? ) PROSE } 
+ { R (Le lendemain Chouquet vint me trouver et, brusquement: «Mais elle a laissé ici sa voiture, cette… cette femme. Qu’est-ce que vous en faites, de cette voiture? ) PROSE } 
  { NEW-PARA } 
  { R (— «Rien, prenez-la si vous voulez. ) PROSE } 
  { NEW-PARA } 
@@ -626,7 +628,7 @@ showpage
  { NEW-PARA } 
  { R (Le médecin se tut. ) PROSE } 
  { NEW-PARA } 
- { R (Alors la marquise, qui avait des larmes dans les yeux, soupira : «Décidément, il n’y a que les femmes pour savoir aimer!» ) PROSE } 
+ { R (Alors la marquise, qui avait des larmes dans les yeux, soupira: «Décidément, il n’y a que les femmes pour savoir aimer!» ) PROSE } 
 ] TYPESET
 
 [
@@ -671,7 +673,7 @@ showpage
  { NEW-PARA } 
  { R (— Non, monsieur. ) PROSE } 
  { NEW-PARA } 
- { R (Cet œil, cette voix, ce visage, je les connaissais. Mais d’où, de quand ? Certes, j’avais rencontré ce garçon-là, je lui avais parlé, je lui avais serré la main. Cela datait de loin, de très loin; c’était perdu dans cette brume où l’esprit semble chercher à tâtons les souvenirs et les poursuit, comme des fantômes fuyants, sans les saisir. ) PROSE } 
+ { R (Cet œil, cette voix, ce visage, je les connaissais. Mais d’où, de quand? Certes, j’avais rencontré ce garçon-là, je lui avais parlé, je lui avais serré la main. Cela datait de loin, de très loin; c’était perdu dans cette brume où l’esprit semble chercher à tâtons les souvenirs et les poursuit, comme des fantômes fuyants, sans les saisir. ) PROSE } 
  { NEW-PARA } 
  { R (Lui aussi, maintenant, me dévisageait avec la ténacité et la fixité d’un homme qui se rappelle un peu, mais pas tout à fait. ) PROSE } 
  { NEW-PARA } 
@@ -701,7 +703,7 @@ showpage
  { NEW-PARA } 
  { R (Il y avait de l’amour là-dedans. J’en retrouvais la sensation particulière au fond de ma mémoire, mais rien de plus, sensation comparable au fumet que sème pour le nez d’un chien le pied d’un gibier sur le sol. ) PROSE } 
  { NEW-PARA } 
- { R (Peu à peu, cependant, les ombres s’éclaircirent et une figure de jeune fille surgit devant mes yeux. Puis son nom éclata dans ma tête comme un pétard qui s’allume : Mlle de Mandal. Je me rappelais tout, maintenant. C’était, en effet, une histoire d’amour, mais banale. Cette jeune fille aimait ce jeune homme, lorsque je l’avais rencontrée, et on parlait de leur prochain mariage. Il paraissait lui-même très épris, très heureux. ) PROSE } 
+ { R (Peu à peu, cependant, les ombres s’éclaircirent et une figure de jeune fille surgit devant mes yeux. Puis son nom éclata dans ma tête comme un pétard qui s’allume: Mlle de Mandal. Je me rappelais tout, maintenant. C’était, en effet, une histoire d’amour, mais banale. Cette jeune fille aimait ce jeune homme, lorsque je l’avais rencontrée, et on parlait de leur prochain mariage. Il paraissait lui-même très épris, très heureux. ) PROSE } 
  { NEW-PARA } 
  { R (Je levai les yeux vers le filet où tous les paquets apportés par le domestique de mon voisin tremblotaient aux secousses du train, et la voix du serviteur me revint comme s’il finissait à peine de parler. ) PROSE } 
  { NEW-PARA } 
@@ -717,7 +719,7 @@ showpage
  { NEW-PARA } 
  { R (Était-il heureux ou torturé? Une envie, légère d’abord, puis grandissante, puis irrésistible, me saisit de connaître son histoire, d’en savoir au moins les points principaux, qui me permettraient de deviner ce qu’il ne pourrait pas ou ne voudrait pas me dire. ) PROSE } 
  { NEW-PARA } 
- { R (Je lui parlais, tout en songeant. Nous avions échangé quelques paroles banales; et moi, les yeux levés vers le filet, je pensais: «Il a donc trois enfants : les bonbons sont pour sa femme, la poupée  pour sa petite fille, le tambour et le fusil pour ses fils, ce pâté de foies gras pour lui.» ) PROSE } 
+ { R (Je lui parlais, tout en songeant. Nous avions échangé quelques paroles banales; et moi, les yeux levés vers le filet, je pensais: «Il a donc trois enfants: les bonbons sont pour sa femme, la poupée  pour sa petite fille, le tambour et le fusil pour ses fils, ce pâté de foies gras pour lui.» ) PROSE } 
  { NEW-PARA } 
  { R (Soudain, je lui demandai: ) PROSE } 
  { NEW-PARA } 
@@ -1105,8 +1107,7 @@ showpage
  { R ( connaissait parfaitement l’affaire, ayant été appelé à prendre part, avec son navire, aux tentatives de sauvetage. ) PROSE } 
  { NEW-PARA } 
  { R (Il me raconta le sinistre, très simple d’ailleurs. Le ) PROSE } 
- { I (Marie-Joseph) PROSE } 
- { NEW-PARA } 
+ { I (Marie-Joseph ) PROSE } 
  { R (poussé par un coup de vent furieux, perdu dans la nuit, naviguant au hasard sur une mer d’écume — «une mer de soupe au lait», disait le capitaine — était venu s’échouer sur ces immenses bancs de sable qui changent les côtes de cette région en Saharas illimités, aux heures de la marée basse. ) PROSE } 
  { NEW-PARA } 
  { R (Tout en causant, je regardais autour de moi et devant moi. Entre l’océan et le ciel pesant restait un espace libre où l’œil voyait au loin. Nous suivions une terre. Je demandai: ) PROSE } 
@@ -2115,8 +2116,7 @@ showpage
  { R (Il ne le savait pas, n’y comprenait rien, mais demeurait, en tout cas, bien décidé à faire sa femme de cette enfant. ) PROSE } 
  { NEW-PARA } 
  { R (Les parents hésitèrent longtemps, retenus par la mauvaise réputation du jeune homme. Il avait une maîtresse, disait-on, une ) PROSE } 
- { I (vieille maîtresse,) PROSE } 
- { NEW-PARA } 
+ { I (vieille maîtresse, ) PROSE } 
  { R (une ancienne et forte liaison, une de ces chaînes qu’on croit rompues et qui tiennent toujours. ) PROSE } 
  { NEW-PARA } 
  { R (Outre cela, il aimait, pendant des périodes plus ou moins longues, toutes les femmes qui passaient à portée de ses lèvres. ) PROSE } 
@@ -3536,12 +3536,18 @@ showpage
 ] TYPESET
 
 
+
+showpage 
+
 SHOW-TABLE-OF-CONTENTS 
 
 count 0 gt {
   (STUFF LEFT on the operand stack) here 
   count ==
 } if 
+
+(Num stats: ) here
+NUM-STATS ==
 
 (1 em: ) here
 1 em ==
@@ -3563,6 +3569,10 @@ LETTER-WARP-COUNT ==
 % SOME PRINTING SERVICES REQUIRE THE NUMBER OF PAGES TO BE AN EVEN MULTIPLE OF 2 or 4.
 % (I could add code to do this automatically.)
 % Lulu.com: pages must be div by 4; must end with 2 blank pages.
+showpage
+
+showpage 
+showpage
 showpage
 
 

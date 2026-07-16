@@ -10,18 +10,18 @@
 %    algos that change the size of spaces, or inter-letter spaces, subvert the 
 %    good intentions of the font designer.
 %  - my feeling-tone is distinctly more calm when the font is left as intended by 
-%    the font designer, without horizontal distortions of any sort
+%    the font designer, with no detectable distortions
 %
 % Remarks:
 %  - much of the content on the web seems to be jagged-right.
 %  - for me, the goal is to 'never see the algorithm at work', but I'm finding it hard to find examples that do that.
-%  - the Knuth-Pluss algo gives pleasing results, but many printed books don't seem to be using it. I've read that 
-%    Adobe's InDesign uses a proprietary algo.
+%  - the Knuth-Pluss algo gives pleasing results, but only if it's used tastefully.
+%    Many printed books don't seem to be using it. I've read that  Adobe's InDesign uses a proprietary algo.
 %  - I'm getting reasonable results with the final algo below (having the most logic), although the jaggedness is 
 %    a bit wider than what I was originally hoping for.
 %  - hyphenation seems to be the only reasonable way to handle the largest words.
 %
-% These algos assume the following of the PostScript context:
+% The algos implemented here assume the following of the PostScript context:
 %  - a curretpoint exists
 %  - a font is currently active
 %  - 'wd' defines the nominal right-hand limit (the width of a 'work-area')
@@ -39,8 +39,8 @@
 % The [stats] array returned by these procs lets the caller measure the results.
 % Each stat is a dict with info about each line. The keys are:
 %   /jag : the deviation of the real end-of-text from some fixed value (- to the left, + to the right)
-%   /sp-warp : the added width of the space character (always +)
-%   /ltr-warp: the added width of each letter (always +)
+%   /sp-warp : the added width of the space character (always + here)
+%   /ltr-warp: the added width of each letter (always + here)
 
 (base.ps) using
 

@@ -4,7 +4,7 @@
  <p>The top-level class is PostScriptAssembler. 
  It uses the BookLexer class.
  
- <P>The source text needs minor changes for poems and letters (correspondance).
+ <P>The source text needs minor changes for poems and letters (correspondence).
  Poems need to both start and end with '@', while  letters start and end with '^'.
  Since there aren't many of these, it shouldn't be too onerous.
  You'll need to grep the source tree for @ and ^ characters.
@@ -43,7 +43,7 @@ the JavaCC grammar is compact, and so is the Java that transforms its tokens int
  The idea here is to use JavaCC to translate from some input format into a data structure that is directly consumable by PostScript.
  That data structure contains all the text and formatting instructions that you are interested in.
  
- <P>If faced with different input formats, you just write a new parser for that format.
+ <P>If faced with different input formats, you just write a new lexer (or parser) for that format.
  
  <P>ENCODING: JavaCC seems to be designed with two main cases in mind: 
  <ul>
