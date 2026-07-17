@@ -1,4 +1,4 @@
-**Generate a pleasing PDF for a book from files containing the raw source text. The text files can include formatting information (italics and so on).**
+**Generate a pleasing PDF for a book from files containing the raw source text. The text files can include simple formatting information (italics and so on).**
 
 The book can have multiple chapters (or short stories, or similar).
 
@@ -13,7 +13,7 @@ https://github.com/johanley/text-variations
 
 ## What I Learned In This project
 
-*Line-breaking seems to be a case of pick-your-poison.*
+**Line-breaking seems to be a case of pick-your-poison.**
 It seems that you have to choose what defects you can live with.
 The ideal of an algorithm being invisible doesn't seem to be achievable.
 In my opinion, the assertion that TeX does perfect typesetting isn't true.
