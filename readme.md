@@ -59,7 +59,7 @@ In the range 0..127 (0..7F, the range of ASCII), **most (but not all) encodings*
 the same mapping of glyphs to bytes.
 In that case, a file containing such bytes can have multiple valid encodings associated with it.
 
-**At least two encodings that are *not* the same as ASCII in the range 0..7F**:
+**At least two encodings are *not* the same as ASCII in the range 0..7F**:
 - PostScript's built-in *StandardEncoding* 
 - *ISOLatin-1*
 
