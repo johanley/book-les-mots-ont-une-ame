@@ -13,7 +13,7 @@ https://github.com/johanley/text-variations
 
 ## What I Learned In This project
 
-I learned how to experiment with line-breaking algos in PostScript.
+I learned how to experiment with line-breaking algorithms using PostScript.
 
 **Line-breaking seems to be a case of pick-your-poison.**
 It seems you have to choose what defects you can live with.
@@ -38,12 +38,18 @@ I'm inclined nowadays to use jagged-right text.
 When I read such text on the web, I enjoy the calm feeling it gives me.
 
 **A brain interacts with a page of text in two different ways**:
-- seeing the page as a whole
-- scanning over the word stream (actually reading the text)
+- the *page-as-a-whole brain* sees the overall form
+- the *reading-brain* does a laser-like sequential scan over the word stream
 
-For a jagged-right text, the first brain indeed sees irregularities in the page as a whole, but I assert that 
-the second brain isn't bothered at all by the jaggedness. 
-Conversely, the second brain is bothered by distortions in the text such as increases in the width of the space character.
+For a jagged-right text:
+- the *page-as-a-whole* brain sees a displeasing, irregular form
+- the *reading-brain* isn't annoyed by the jaggedness 
+
+For smooth-right text, the converse is true: 
+- the *page-as-a-whole* brain sees a pleasant rectangular form
+- the *reading-brain* is annoyed by small distortions in the text
+
+Again: pick your poison.
 
 Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
