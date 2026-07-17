@@ -130,31 +130,17 @@ There are many, many ways to typeset text :
 It's difficult to foresee all possibilities.
 The idea here is to abandon the idea of trying to automate all possible variations in the text, and just concentrate on what you need the most in a given case.
 
-Outline of the steps to make an output (a single PDF file): 
-- 1. acquire the source text from somewhere. 
-     Save under the *input* directory. 
-     Use *CP-1252* encoding; convert if needed. 
-     In Java, use Charset and CharsetEncoder (I think).
-     Verify that all bytes are consistent with the *CP-1252* encoding (see WeirdByteValues.java).
-     Separate into chapters, if appropriate.
-     Formatting codes are used in the source text (for italic text, for example).
-- 2. *preprocess* to generate an initial version. 
-     Run Java code to generate PostScript code that contains the source text and formatting instructions.
-     The main idea is to chunk the text into N *runs* of text, with each run sharing the same style/format.
-     The generated PostScript code is manually pasted into BOOK.PS, representing the whole book.
-- 3. run GhostScript to render a PDF. 
-     Review manually to find errors. Fix where needed. 
-     This usually means writing code to handle a new variation on typesetting text.
-     Such changes may or may not be absorbed back into the 'core' preprocessor.
-
 
 Example Ghostscript command to generate a PDF from a PostScript file:
+
 `C:\ghostscript\gs10.04.0\bin\gswin64c.exe -dNOSAFER -sDEVICE=pdfwrite -o BOOK.PDF BOOK.PS`
 
 The location of your font can be added as another command line switch:
+
 `-sFONTPATH=C:\Windows\Fonts`
 
 or it can be set in your environment: 
+
 `GS_FONTPATH=C:\Windows\Fonts;C:\Users\Owner\AppData\Local\Microsoft\Fonts`
  
  
