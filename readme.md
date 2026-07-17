@@ -25,7 +25,7 @@ Line breaking algorithms make use of these techniques to change horizontal lengt
 - hyphenating words
 - (changing the font size? I haven't seen that anywhere. It might be worth a go. The change in height isn't additive, so to speak.)
 
-The first three all introduce some level of distortion.
+**The first three all introduce some level of distortion.**
 To some extent, they undermine the intent of the font designer.
 They can be implemented in PostScript using the `widthshow`, `awidthshow` and `makefont` operators, respectively.
 I believe *InDesign* applies the distorting operations in the order used above.
@@ -46,23 +46,23 @@ the same mapping of glyphs to bytes.
 In that case, a file containing such bytes can have multiple valid encodings associated with it.
 
 Two encodings that are *not* the same as ASCII in the range 0..7F:
-- PostScript's built-in StandardEncoding 
-- ISOLatin-1
+- PostScript's built-in *StandardEncoding* 
+- *ISOLatin-1*
 
 The difference is just a single glyph/byte: octal 140 (hex 60) is a *grave* in ASCII, but a *quoteleft* in 
-both ISOLatin-1 and PostScript's StandardEncoding. 
-(See the PostScript Language Reference Manual, 3rd edition, page 783.)
+both *ISOLatin-1* and PostScript's *StandardEncoding*. 
+(See the *PostScript Language Reference Manual*, 3rd edition, page 783.)
 Sometimes you see text which mixes a *grave* with a *quoteright*, like this: 
 
 `blah blah' 
 
-This might be caused by using ISOLatin-1, and incorrectly expecting it to be ASCII-compatible.
+This might be caused by using *ISOLatin-1*, and incorrectly expecting it to be ASCII-compatible.
 
 PostScript handles single-byte encodings easily, using its encoding vector (whose length is 256).
 For multiple-byte encodings (Unicode encodings), PostScript can handle them, but with 
 significantly more work (so I hear; I've never tried that myself).
 
-The windows-1252 encoding has more to offer than 8859-1. 
+The *windows-1252* encoding has more to offer than 8859-1. 
 Its set of glyphs is larger; rounded quotations and em-dashes are very nice to have, but are absent from 8859-1.
 
 Sometimes all you need is a lexer (tokens), not a full parser. 
@@ -76,7 +76,7 @@ The newline was particularly painful, because it's used in three different ways:
 - a paragraph separator
 - a line separator (in the context of poetry).
 
-*The line between lexing and parsing is not always clear-cut*.
+**The line between lexing and parsing is not always clear-cut**.
 
 In my case, a simple lexer combined with some simple Java code was able to generate 
 the desired PostScript data structures with only a small amount of code. 
