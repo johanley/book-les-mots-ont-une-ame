@@ -50,7 +50,7 @@ Two encodings that are *not* the same as ASCII in the range 0..7F:
 **The difference is just a single glyph/byte**: octal 140 (hex 60) is a *grave* in ASCII, but a *quoteleft* in 
 both *ISOLatin-1* and PostScript's *StandardEncoding*.
 (See the *PostScript Language Reference Manual*, 3rd edition, page 783.)
-Sometimes you see text which mixes a *grave* with a *quoteright*, like this: 
+Sometimes you see text which mixes a *grave* with a quote character, like this: 
 
 `blah blah' 
 
@@ -87,16 +87,16 @@ Notepad++ has a lot of internal logic for encodings under the hood.
 Perhaps it's best not to rely on it for either detection of encoding or conversion of encoding.
 In Notepad++, 'ANSI' means different things. 
 
-Its 'Convert to...' operations preserve glyphs, while changing bytes that represent those glyphs.
-Above the 'Convert to...' part, operations preserve bytes, but change displayed glyphs.
-** WARNING ** : These are two completely different operations! 
+Its 'Convert to...' operations *preserve glyphs*, while changing bytes that represent those glyphs.
+Above the 'Convert to...' part, operations *preserve bytes*, but change displayed glyphs.
+These are two completely different operations! 
 I find this all rather confusing and unclear for casual use.
 
 ## General Notes
 The general flow:
-- find or write the source text (usually with the CP1252 encoding (also known as 'windows-1252')
-- a JavaCC parser reads the text and emits PostScript dictionaries (saved to files) containing the 'runs' of text having the same style
-- a 'MAIN.PS' PostScript file reads the dictionary files and, if needed, it allows for custom, manual changes
+- find or write the source text (usually with the *CP1252* encoding (also known as *windows-1252*)
+- a JavaCC parser reads the text and emits PostScript code containing the *runs* of text having the same style
+- a 'BOOK.PS' PostScript file reads the dictionary files and, if needed, it allows for custom, manual changes
 - a Ghostscript command changes the PostScript into the final PDF
 - you print the book using lulu.com or similar 
 
@@ -112,20 +112,18 @@ There are many, many ways to typeset text :
 
 It's difficult to foresee all possibilities.
 The idea here is to abandon the idea of trying to automate all possible variations in the text, and just concentrate on what you need the most in a given case.
-In most cases, what you need the most is simply the body of the chapter text. 
-Secondary items like a title page or a table of contents can be hand-written directly in PostScript.
 
 Outline of the steps to make an output (a single PDF file): 
 - 1. acquire the source text from somewhere. 
      Save under the input directory. 
-     Use CP-1252 encoding; convert if needed. In Java, use Charset and CharsetEncoder (I think).
-     Verify that all bytes are consistent with the CP-1252 encoding (see WeirdByteValues.java).
+     Use *CP-1252* encoding; convert if needed. In Java, use Charset and CharsetEncoder (I think).
+     Verify that all bytes are consistent with the *CP-1252* encoding (see WeirdByteValues.java).
      Separate into chapters, if appropriate.
      Formatting codes are used in the source text (for italic text, for example).
-- 2. 'preprocess' to generate an initial version. 
-     Run Java code to generate PostScript dictionaries (saved in files) that contain the source text and formatting instructions expressed in a way that's consumable by PostScript.
-     The main idea is to chunk the text into N 'runs' of text, with each run sharing the same style/format.
-     The PostScript dictionaries (files) are then read directly by other PostScript files representing the whole document/book.
+- 2. *preprocess* to generate an initial version. 
+     Run Java code to generate PostScript code that contains the source text and formatting instructions.
+     The main idea is to chunk the text into N *runs* of text, with each run sharing the same style/format.
+     The generated PostScript code is manually pasted into BOOK.PS, representing the whole book.
 - 3. run GhostScript to render a PDF. 
      Review manually to find errors. Fix where needed. 
      This usually means writing code to handle a new variation on typesetting text.
@@ -133,7 +131,7 @@ Outline of the steps to make an output (a single PDF file):
 
 
 Example Ghostscript command to generate a PDF from a PostScript file:
-`C:\ghostscript\gs10.04.0\bin\gswin64c.exe -dNOSAFER -sDEVICE=pdfwrite -o COVER.PDF COVER.PS`
+`C:\ghostscript\gs10.04.0\bin\gswin64c.exe -dNOSAFER -sDEVICE=pdfwrite -o BOOK.PDF BOOK.PS`
 
 The location of your font can be added as another command line switch:
 `-sFONTPATH=C:\Windows\Fonts`
@@ -146,16 +144,17 @@ or it can be set in your environment:
  
 I'm not sure how to use Unicode encodings in PostScript. 
 I think it's possible, but more difficult.
-For this project, I'm going to stick with the CP-1252 encoding:
+For this project, I'm going to stick with the *CP-1252* encoding:
 - it's expressive enough for my needs (and more expressive than 8859-1)
 - it's a simple single-byte encoding
 - it includes attractive curly double quotes
 - it's easily used with PostScript
 - it's easy to detect 'weird' bytes in source text
 
-Reference for using CP-1252 in PostScript: 
+Reference for using *CP-1252* in PostScript: 
   https://stackoverflow.com/questions/32443178/how-do-i-encode-a-font-to-use-cp1252-windows-1252-encoding-in-postscript
-See the response from KenS, to see how to re-encode a font to use Windows-1252.
+See the response from KenS, to see how to re-encode a font to use *windows-1252*.
+I made several corrections to his suggested encoding vector.
 
 ### Comparison of encodings
 
@@ -163,15 +162,15 @@ See the response from KenS, to see how to re-encode a font to use Windows-1252.
 - 040..176 (20..7E)
 - 240..377 (A0..FF)
 
-ISOLatin-1 (PostScript) 191 + 14 (almost always unused) = 205 visible chars in these ranges, in octal (hex)
+*ISOLatin-1* (PostScript) 191 + 14 (almost always unused) = 205 visible chars in these ranges, in octal (hex)
 - 040..176 (20..7E)
 - 220..230 (90..98)
 - 232..233 (9A..9B)
 - 235..377 (9D..FF)
 
-ISOLatin-1 is nearly a superset of 8859-1, except for one char (!): octal 140 (hex 60): 
-- quoteleft in ISOLatin-1
-- grave in 8859-1.
+*ISOLatin-1* is nearly a superset of 8859-1, except for one char (!): octal 140 (hex 60): 
+- *quoteleft* in *ISOLatin-1*
+- *grave* in 8859-1.
 - this is the source of the weird occurence of grave where an open-single-quote is expected by PostScript
 
 Windows 1252 has 191 + 27 = 218 visible chars 
@@ -184,19 +183,16 @@ Windows 1252 has 191 + 27 = 218 visible chars
 - 221..234 (91..9C)
 - 236..377 (9E..FF)
 
-
-      
-
 ## Punctuation oddities:
 - the 8859-1 open-quote (octal 047, hex 27) character is actually a back-quote on my PC's keyboard.
 - the 8859-1 encoding has a 'minus' character (octal 055, hex 2D) and a 'hyphen' (octal 255, hex AD) character that are very similar.
         The hyphen is shorter, and usually is preferred.
         The hypen character has no dedicated key on my keyboard; Alt+0173 is needed.
 - in 8859-1, the apostrophe is a single right quote (octal 047, hex 27)
-- the apostrophe in Windows-1252 is (octal 221, hex 92), not used in 8859-1 or ISOLatin-1.
+- the apostrophe in *windows-1252* is (octal 221, hex 92), not used in 8859-1 or *ISOLatin-1*.
 
 
-Selected CP1252 characters (hex):
+Selected *CP1252* characters (hex):
 - open, close curly double quote: 93, 94
 - open, close curly single quote: 91, 92
 - open, close guillemet: AB, BB
