@@ -20,22 +20,22 @@ In my opinion, the assertion that TeX does perfect typesetting isn't true.
 
 Line breaking algorithms make use of these techniques to change horizontal length of a line:
 - distorting the width of the space character
-- distorting the horizontal space between glyphs ('glyph width' in PostScript lingo; 'letter spacing', or 'tracking' elsewhere)
-- distorting the glyph horizontally ('glyph scaling', using InDesign's lingo; this only affects the width of the glyph)
+- distorting the horizontal space between glyphs (*glyph width* in PostScript lingo; *letter spacing*, or *tracking* elsewhere)
+- distorting the glyph horizontally (*glyph scaling* in the lingo of *InDesign*; this only affects the width of the drawing)
 - adding hyphens
 - (changing the font size? I haven't seen that anywhere. It might be worth a go. The change in height isn't additive, so to speak.)
 
 The first three all introduce some level of distortion.
 To some extent, they undermine the intent of the font designer.
 They can be implemented in PostScript using the `widthshow`, `awidthshow` and `makefont` operators, respectively.
-I believe InDesign applies the distorting operations in the order used above.
-That is, InDesign will use glyph-scaling only as a last resort in order to get smooth-right text.
+I believe *InDesign* applies the distorting operations in the order used above.
+That is, *InDesign* will use glyph-scaling only as a last resort in order to get smooth-right text.
 
-(Personally, I'm a bit sick and tired of smooth-right, distorted text. 
+Personally, I'm a bit tired of smooth-right, distorted text. 
 I'm inclined nowadays to use jagged-right text. 
 When I read such text on the web, I enjoy the calm feeling it gives me.
-The long tradition of smooth-right ('justified') text was born in an era when paper was precious and expensive. 
-That's no longer the case.)
+The long tradition of smooth-right (*justified*) text was born in an era when paper was precious and expensive. 
+That's no longer the case.
 
 Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
@@ -72,7 +72,7 @@ I had trouble trying to build a JavaCC parser for the source text.
 I eventually gave up, and just used a lexer.
 I had problems removing ambiguity.
 The newline was particularly painful, because it's used in three different ways:
-- an 'accidental' new line in source text prose (which get replaced by single spaces)
+- an *accidental* new line in source text prose (which get replaced by single spaces)
 - a paragraph separator
 - a line separator (in the context of poetry).
 
