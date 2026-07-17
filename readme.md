@@ -16,13 +16,13 @@ https://github.com/johanley/text-variations
 **Line-breaking seems to be a case of pick-your-poison.**
 It seems that you have to choose what defects you can live with.
 The ideal of an algorithm being invisible doesn't seem to be achievable.
-In my opinion, the assertion that TeX does perfect typesetting isn't true.
+In my opinion, the assertion that *TeX* does perfect typesetting isn't true.
 
 Line breaking algorithms make use of these techniques to change horizontal length of a line:
 - distorting the width of the space character
 - distorting the horizontal space between glyphs (*glyph width* in PostScript lingo; *letter spacing*, or *tracking* elsewhere)
 - distorting the glyph horizontally (*glyph scaling* in the lingo of *InDesign*; this only affects the width of the drawing)
-- adding hyphens
+- hyphenating words
 - (changing the font size? I haven't seen that anywhere. It might be worth a go. The change in height isn't additive, so to speak.)
 
 The first three all introduce some level of distortion.
@@ -41,7 +41,7 @@ Paragraph indentation: the smaller it is, the more it helps with fitting words o
 
 In old English text, it's common to see a double space between a period and the start of the next sentence.
 
-In the range 0..127 (0..7F, the range of ASCII), most (but not all) encodings use exactly 
+In the range 0..127 (0..7F, the range of ASCII), **most (but not all) encodings** use exactly 
 the same mapping of glyphs to bytes.
 In that case, a file containing such bytes can have multiple valid encodings associated with it.
 
@@ -49,10 +49,10 @@ Two encodings that are *not* the same as ASCII in the range 0..7F:
 - PostScript's built-in StandardEncoding 
 - ISOLatin-1
 
-The difference is just a single glyph/byte: octal 140 (hex 60) is a grave in ASCII, but a quoteleft in 
+The difference is just a single glyph/byte: octal 140 (hex 60) is a *grave* in ASCII, but a *quoteleft* in 
 both ISOLatin-1 and PostScript's StandardEncoding. 
 (See the PostScript Language Reference Manual, 3rd edition, page 783.)
-Sometimes you see text which mixes a grave with a quoteright, like this: 
+Sometimes you see text which mixes a *grave* with a *quoteright*, like this: 
 
 `blah blah' 
 
