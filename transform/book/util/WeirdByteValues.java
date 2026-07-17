@@ -30,10 +30,10 @@ public final class WeirdByteValues {
   
   public static void main(String[] args) throws IOException {
     WeirdByteValues examineBytes = new WeirdByteValues(TABS_ARE_WEIRD);
-    //examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input");
+    examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\input");
     //examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\util");
     //examineBytes.reportRecursive("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\output\\");
-    examineBytes.report("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\simple-text-05-small.1252");
+    //examineBytes.report("C:\\johanley\\ProjectsPhoton\\book-les-mots-ont-une-ame\\transform\\book\\parser\\experiments\\simple-text-05-small.1252");
   }
   
   WeirdByteValues(boolean tabsAreWeird){
@@ -155,6 +155,8 @@ public final class WeirdByteValues {
   /** Descriptions of unusual byte values that I wish to track. */
   private static Map<Integer /*0..255*/, String /*description*/> WEIRDO_DESCRIPTIONS = new LinkedHashMap<>();
   static {
+    WEIRDO_DESCRIPTIONS.put(34, "quotedbl");
+    WEIRDO_DESCRIPTIONS.put(39, "quotesingle");
     WEIRDO_DESCRIPTIONS.put(127, "delete");
     WEIRDO_DESCRIPTIONS.put(128, "euro");
     WEIRDO_DESCRIPTIONS.put(130, "bottom-single-quote");

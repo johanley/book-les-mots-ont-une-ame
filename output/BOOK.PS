@@ -137,24 +137,12 @@
 % Italic font.
 /I { (italic) 100 use-font } bind def
 
-% REMOVE THIS. IT'S IN THE BASE.PS
-% The current y-position.
-/current-y {
-  currentpoint exch pop % y
-} bind def
-
-% REMOVE THIS. IT'S IN THE BASE.PS
-% The current x-position.
-/current-x {
-  currentpoint pop % x
-} bind def
-
 % Move the currentpoint to the left, and down by the LEADING.
 % Forces a NEW-PAGE if the new y-value is less than 0.
 /NEW-LINE {
-  current-y LEADING gt {
+  cp-y LEADING gt {
     0 
-    current-y LEADING sub 
+    cp-y LEADING sub 
     moveto
   }
   { NEW-PAGE }
@@ -201,7 +189,7 @@
 % Two more new-lines.
 % Can force a NEW-PAGE.
 /BLANK-LINE {
-  current-y LEADING 2 mul gt {
+  cp-y LEADING 2 mul gt {
     NEW-LINE 
     NEW-LINE
   } 
@@ -210,29 +198,9 @@
 } bind def
 
 % str
-% Regular text flow, using the current font.
-% Emits each word found in the string with a trailing space.
+% Regular text flow, using the current font, and a line-breaking algorithm.
 % An initial or final trailing space is emitted only if str starts or ends with a space.
 % Can force a NEW-LINE/NEW-PAGE.
-% /PROSE {
-  % [/str] {
-    % str SPACE str-starts-with? {SPACE show} if
-    % str str-words /words defi % chop into words (all spaces are obliterated)
-    % 0 1  words length 1 sub {
-      % /idx defi
-      % words idx get  /word defi
-      % word str-width  /word-wd defi
-      % current-x word-wd add  /new-x defi
-      % new-x wd sub  /line-overflow defi
-      % line-overflow  word-wd 2 div  gt { NEW-LINE } if
-      % word show 
-      % idx  words length 1 sub  lt {
-        % SPACE show % add a space after all non-terminal words
-      % } if
-    % } for
-    % str SPACE str-ends-with? {SPACE show} if
-  % } def-tmp
-% } bind def
 /PROSE {
 
   % jag-min -63.39  jag-max 0 num-space-warp 0 num-ltr-warp 0 em 7.4375  
@@ -294,7 +262,7 @@
     I
     % compute the final y-value, to see if it will fit on the current page
     % y - (num-lines + 1) * leading > 0
-    current-y  lines length 1 add   LEADING mul  sub 
+    cp-y  lines length 1 add   LEADING mul  sub 
     0 gt { 
       NEW-LINE % should already have one NL preceding
     } { 
@@ -325,7 +293,7 @@
   R
   %(regular) 120 use-font 
   % compute the final y-value, to see if it will fit on the current page
-  current-y 2 LEADING mul sub
+  cp-y 2 LEADING mul sub
   0 lt {
     NEW-PAGE 
   } if
@@ -371,12 +339,12 @@
   TABLE-OF-CONTENTS {
     % << /chapter-title (Le Lit) /start-page 42 >>
     /chap defi % dict
-    wd 15 pct current-y moveto
+    wd 15 pct cp-y moveto
     chap /chapter-title get show
     { ( .) show
-      current-x  wd 78 pct  gt { exit } if
+      cp-x  wd 78 pct  gt { exit } if
     } loop
-    wd 85 pct current-y moveto
+    wd 85 pct cp-y moveto
     chap /start-page get 4 string cvs show-right-align
     NEW-LINE
   } forall
