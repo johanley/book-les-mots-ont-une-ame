@@ -3,7 +3,7 @@
 The book can have multiple chapters (or short stories, or similar).
 
 Tools used: 
-- JavaCC parser generator
+- JavaCC parser generator (I actually build only a lexer)
 - PostScript (Ghostscript)
 
 I'm using the results of this project for the source text:
@@ -34,12 +34,10 @@ That is, *InDesign* will use glyph-scaling only as a last resort in order to get
 Personally, I'm a bit tired of smooth-right, distorted text. 
 I'm inclined nowadays to use jagged-right text. 
 When I read such text on the web, I enjoy the calm feeling it gives me.
-The long tradition of smooth-right (*justified*) text was born in an era when paper was precious and expensive. 
-That's no longer the case.
 
 Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
-In old English text, it's common to see a double space between a period and the start of the next sentence.
+In old English text, it's common to see a *double* space between a period and the start of the next sentence.
 
 In the range 0..127 (0..7F, the range of ASCII), **most (but not all) encodings** use exactly 
 the same mapping of glyphs to bytes.
@@ -49,8 +47,8 @@ Two encodings that are *not* the same as ASCII in the range 0..7F:
 - PostScript's built-in *StandardEncoding* 
 - *ISOLatin-1*
 
-The difference is just a single glyph/byte: octal 140 (hex 60) is a *grave* in ASCII, but a *quoteleft* in 
-both *ISOLatin-1* and PostScript's *StandardEncoding*. 
+**The difference is just a single glyph/byte**: octal 140 (hex 60) is a *grave* in ASCII, but a *quoteleft* in 
+both *ISOLatin-1* and PostScript's *StandardEncoding*.
 (See the *PostScript Language Reference Manual*, 3rd edition, page 783.)
 Sometimes you see text which mixes a *grave* with a *quoteright*, like this: 
 
