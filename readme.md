@@ -115,8 +115,9 @@ The idea here is to abandon the idea of trying to automate all possible variatio
 
 Outline of the steps to make an output (a single PDF file): 
 - 1. acquire the source text from somewhere. 
-     Save under the input directory. 
-     Use *CP-1252* encoding; convert if needed. In Java, use Charset and CharsetEncoder (I think).
+     Save under the *input* directory. 
+     Use *CP-1252* encoding; convert if needed. 
+     In Java, use Charset and CharsetEncoder (I think).
      Verify that all bytes are consistent with the *CP-1252* encoding (see WeirdByteValues.java).
      Separate into chapters, if appropriate.
      Formatting codes are used in the source text (for italic text, for example).
