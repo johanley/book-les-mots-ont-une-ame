@@ -34,7 +34,7 @@ I believe *InDesign* applies the distorting operations in the order used above.
 That is, *InDesign* will use glyph-scaling only as a last resort in order to get smooth-right text.
 
 Personally, I'm a bit tired of smooth-right, distorted text. 
-I'm inclined nowadays to use jagged-right text. 
+I'm inclined nowadays to use jagged-right, undistorted text. 
 When I read such text on the web, I enjoy the calm feeling it gives me.
 
 **A brain interacts with a page of text in two different ways**:
@@ -110,11 +110,12 @@ I find this all rather confusing and unclear for casual use.
 
 ## General Notes
 The general flow:
-- find or write the source text (usually with the *CP1252* encoding (also known as *windows-1252*)
-- a JavaCC parser reads the text and emits PostScript code containing the *runs* of text having the same style
-- a 'BOOK.PS' PostScript file reads the dictionary files and, if needed, it allows for custom, manual changes
-- a Ghostscript command changes the PostScript into the final PDF
-- you print the book using lulu.com or similar 
+- find or write the source text; use the *CP1252* encoding (also known as *windows-1252*)
+- `transform.book.util.WeirdBytValues.java`: examine the bytes in all files, looking for weird characters
+- `transform.book.lexer.PostScriptAssembler`: a JavaCC lexer reads the text and emits PostScript code containing the *runs* of text having the same style 
+- `output.BOOK.PS`: the generated PostScript code is pasted in here (if needed, small tweaks can be made here)
+- a Ghostscript command changes `BOOK.PS` into the final PDF
+- you print the book using lulu.com or a similar service
 
 
 There are many, many ways to typeset text : 
