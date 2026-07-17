@@ -6,12 +6,17 @@ Tools used:
 - JavaCC parser generator
 - PostScript (Ghostscript)
 
+I'm using the results of this project for the source text:
+
+https://github.com/johanley/text-variations
+
+
 ## What I Learned In This project
 
-Line-breaking seems to be a case of 'pick your poison'. 
-You have to choose what defects you're going to live with.
-The ideal of the algo being invisible doesn't seem to be achievable.
-The assertion that TeX does perfect typesetting is, in my opinion, not true.
+*Line-breaking seems to be a case of pick-your-poison.*
+It seems that you have to choose what defects you can live with.
+The ideal of an algorithm being invisible doesn't seem to be achievable.
+In my opinion, the assertion that TeX does perfect typesetting isn't true.
 
 Line breaking algorithms make use of these techniques to change horizontal length of a line:
 - distorting the width of the space character
@@ -22,7 +27,7 @@ Line breaking algorithms make use of these techniques to change horizontal lengt
 
 The first three all introduce some level of distortion.
 To some extent, they undermine the intent of the font designer.
-They can be implemented in PostScript using the widthshow, awidthshow and makefont operators, respectively.
+They can be implemented in PostScript using the `widthshow`, `awidthshow` and `makefont` operators, respectively.
 I believe InDesign applies the distorting operations in the order used above.
 That is, InDesign will use glyph-scaling only as a last resort in order to get smooth-right text.
 
