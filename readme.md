@@ -13,12 +13,14 @@ https://github.com/johanley/text-variations
 
 ## What I Learned In This project
 
+I learned how to experiment with line-breaking algos in PostScript.
+
 **Line-breaking seems to be a case of pick-your-poison.**
-It seems that you have to choose what defects you can live with.
+It seems you have to choose what defects you can live with.
 The ideal of an algorithm being invisible doesn't seem to be achievable.
 In my opinion, the assertion that *TeX* does perfect typesetting isn't true.
 
-Line breaking algorithms make use of these techniques to change horizontal length of a line:
+Line breaking algorithms make use of these techniques to change the horizontal length of a line:
 - distorting the width of the space character
 - distorting the horizontal space between glyphs (*glyph width* in PostScript lingo; *letter spacing*, or *tracking* elsewhere)
 - distorting the glyph horizontally (*glyph scaling* in the lingo of *InDesign*; this only affects the width of the drawing)
@@ -34,6 +36,14 @@ That is, *InDesign* will use glyph-scaling only as a last resort in order to get
 Personally, I'm a bit tired of smooth-right, distorted text. 
 I'm inclined nowadays to use jagged-right text. 
 When I read such text on the web, I enjoy the calm feeling it gives me.
+
+**A brain interacts with a page of text in two different ways**:
+- seeing the page as a whole
+- scanning over the word stream (actually reading the text)
+
+For a jagged-right text, the first brain indeed sees irregularities in the page as a whole, but I assert that 
+the second brain isn't bothered at all by the jaggedness. 
+Conversely, the second brain is bothered by distortions in the text such as increases in the width of the space character.
 
 Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
