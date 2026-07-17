@@ -3,8 +3,10 @@
 The book can have multiple chapters (or short stories, or similar).
 
 Tools used: 
-- JavaCC parser generator (I actually build only a lexer)
 - PostScript (Ghostscript)
+- JavaCC parser generator (I actually build only a lexer)
+- Java
+
 
 I'm using the results of this project for the source text:
 
@@ -15,12 +17,11 @@ https://github.com/johanley/text-variations
 
 I learned how to experiment with line-breaking algorithms using PostScript.
 
-**Line-breaking seems to be a case of pick-your-poison.**
-It seems you have to choose what defects you can live with.
-The ideal of an algorithm being invisible doesn't seem to be achievable.
-In my opinion, the assertion that *TeX* does perfect typesetting isn't true.
+**Line-breaking seems to be a case of pick-your-poison:** you have to choose which defects you can live with.
+The ideal of an invisible line-breaking algorithm doesn't seem to be achievable.
+In my opinion, the assertion that *TeX* does "perfect" typesetting isn't true.
 
-Line breaking algorithms make use of these techniques to change the horizontal length of a line:
+Line breaking algorithms use these techniques to change the horizontal length of a line:
 - distorting the width of the space character
 - distorting the horizontal space between glyphs (*glyph width* in PostScript lingo; *letter spacing*, or *tracking* elsewhere)
 - distorting the glyph horizontally (*glyph scaling* in the lingo of *InDesign*; this only affects the width of the drawing)
@@ -49,7 +50,7 @@ For smooth-right text, the converse is true:
 - the *page-as-a-whole* brain sees a pleasant rectangular form
 - the *reading-brain* is annoyed by small distortions in the text
 
-Again: pick your poison.
+Again: you have to pick your poison.
 
 Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
@@ -112,10 +113,10 @@ I find this all rather confusing and unclear for casual use.
 The general flow:
 - find or write the source text; use the *CP1252* encoding (also known as *windows-1252*)
 - `transform.book.util.WeirdBytValues.java`: examine the bytes in all files, looking for weird characters
-- `transform.book.lexer.PostScriptAssembler`: a JavaCC lexer reads the text and emits PostScript code containing the *runs* of text having the same style 
+- `transform.book.lexer.PostScriptAssembler`: a JavaCC lexer reads the text and emits PostScript code 
 - `output.BOOK.PS`: the generated PostScript code is pasted in here (if needed, small tweaks can be made here)
 - a Ghostscript command changes `BOOK.PS` into the final PDF
-- you print the book using lulu.com or a similar service
+- you print the book using *lulu.com* or a similar service
 
 
 There are many, many ways to typeset text : 
@@ -207,23 +208,6 @@ Selected *CP1252* characters (hex):
 - curved apostrophe: 92, re-use the close curly single quote
 
 
-Selected 8859-1 characters, octal (hex)
-- emdash: none!
-- endash: none!
-- left-right curvy double quotes: none! only the straight version is available
-- single-quote (straight): none! only the curvy left-right version is available
-- open guillemet: 253 (AB)
-- close guillemet: 273 (BB)
-- hyphen: 255 (AD) is shorter than minus, and is usually preferred
-- minus: 055 (2D)
-- double-quote (straight, open and close): 042 (27)
-- grave/left-single-quote: 140 (60) (be careful! grave-or-quote issue!)
-- right-single-quote: 047 (27)
-- eacute: 351 (E9)
-- egrave: 350 (E8)    
-- ccedilla: 347 (E7)
-
-
 ## Source Text Styling Formats 
 
 - paragraph: blank line
@@ -264,7 +248,7 @@ If you change the order of appearance of the token definitions, that will often 
 
 Unexpected: if you only define a simple 'skip tabs' token defined, every single character in the stream is apparently a token by default.
 
-Unexpected: the built-in <EOF> can't be placed inside a token definition. 
+Unexpected: the built-in EOF can't be placed inside a token definition. 
 It can only appear in a 'syntactic production'. 
 
 The snippet of code you see in docs for viewing all of the tokens in the stream:
