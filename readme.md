@@ -52,6 +52,11 @@ For smooth-right text, the converse is true:
 
 Again: you have to pick your poison.
 
+The *TeX* line-breaking algorithm gets a lot of attention. 
+But, in its original form, it may not actually be very widely used these days.
+(Adobe's *InDesign* certainly doesn't use it.)
+In *Tex*-land, it has been extended to behave in ways not intended by its original authors.
+
 Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
 In old English text, it's common to see a *double* space between a period and the start of the next sentence.
