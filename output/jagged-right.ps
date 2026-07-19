@@ -168,7 +168,7 @@
 %  - increase the width of the space character on the line/run (capped by the /whitecap value).
 %  - if the result is STILL short of the window, then the letter spacing is increased UNIFORMLY by /letter-space-incr.
 %
-% The final result is allowed to fall short of the window; the remedial steps are required to make up 100% of the shortfall.
+% The final result is allowed to fall short of the window; the remedial steps are not required to make up 100% of the shortfall.
 %
 % I would like these techniques to 'win' about two letters-width each, roughly speaking. 
 % Personally, I find it prudent to limit these effects, and to live with the resulting jagged-right text.
@@ -299,7 +299,7 @@
 } bind def
 
 
-% str limit-x tolerance-x font-size-incr -> [stats]
+% str limit-x tolerance-x font-size-factor -> [stats]
 %
 % In this version, the fixed limit is not strictly enforced. 
 % A word that passes limit-x can sometimes be retained on the line.
@@ -308,11 +308,13 @@
 % Iff the line undershoots the window [limit-x - tolerance-x], then this algo will take REMEDIAL STEPS:
 %  - increase the size of the font by /font-size-factor (e.g. 1.02).
 %
-% The final result is allowed to fall short of the window; the remedial steps are required to make up 100% of the shortfall.
+% The final result is allowed to fall short of the window; the remedial steps are not required to make up 100% of the shortfall.
 %
 % The final line never changes any spacing.
 %
 % This algo is line-at-a-time, not word-at-a-time.
+% 
+% Remarks: I find a 5% increase to be excessive; 2.5% might be acceptable.
 /jagged-right-5 {
   % Use two indexes i, j into an array of words, to track the start/end of a line/run of text.
   % With each line/run, i and j are recomputed, until the whole array is consumed.
@@ -351,16 +353,17 @@
       % I now have i, j, and the good endpoint
       /the-segment concat-together def
       has-defect? {
-        my-current-font /orig-font defi
+        my-fonts /current get  /name get /orig-font-name defi
+        my-fonts /current get  /percent get /orig-font-percent defi
         % scale the font by a factor
-        orig-font /name get 
-        orig-font /size get font-size-factor  selectfont
+        orig-font-name 
+        orig-font-percent font-size-factor  mul    use-font
         
         the-segment show 
         
         % revert the font
-        orig-font /name get 
-        orig-font /size get selectfont
+        orig-font-name 
+        orig-font-percent use-font
       } {
         the-segment show 
       } ifelse
