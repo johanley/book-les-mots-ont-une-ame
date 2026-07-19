@@ -15,7 +15,9 @@ https://github.com/johanley/text-variations
 
 ## What I Learned In This project
 
-I learned how to experiment with line-breaking algorithms using PostScript.
+I learned how to experiment with some line-breaking algorithms using PostScript. 
+I also learned that it's useful for an algo to return data about the resulting lines to the caller.
+This is the only way to precisely evaluate the results.
 
 **Line-breaking seems to be a case of pick-your-poison:** you have to choose which defects you can live with.
 The ideal of an invisible line-breaking algorithm doesn't seem to be achievable.
@@ -55,7 +57,7 @@ Again: you have to pick your poison.
 The *TeX* line-breaking algorithm gets a lot of attention. 
 But, in its original form, it may not actually be very widely used these days.
 (Adobe's *InDesign* certainly doesn't use it.)
-In *Tex*-land, it has been extended to behave in ways not intended by its original authors.
+In *TeX*-land, it has been extended to behave in ways not intended by its original authors.
 
 Paragraph indentation: the smaller it is, the more it helps with fitting words on the line.
 
