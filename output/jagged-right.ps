@@ -18,7 +18,7 @@
 %  - for me, the goal is to 'never see the algorithm at work', but I'm finding it hard to find examples that do that.
 %  - the Knuth-Pluss algo gives pleasing results, but only if it's used tastefully.
 %    Many printed books don't seem to be using it. I've read that  Adobe's InDesign uses a proprietary algo.
-%  - I'm getting reasonable results with the final algo below (having the most logic), although the jaggedness is 
+%  - I'm getting reasonable results with the jagged-right-4 below, although the jaggedness is 
 %    a bit wider than what I was originally hoping for.
 %  - hyphenation seems to be the only reasonable way to handle the largest words.
 %
@@ -40,8 +40,8 @@
 % The [stats] array returned by these procs lets the caller evaluate the results.
 % Each stat is a dict with info about each line. The keys are:
 %   /jag : the deviation of the real end-of-text from some fixed value (- to the left, + to the right)
-%   /sp-warp : the added width of the space character (always positive here)
-%   /ltr-warp: the added width of each letter (always positive here)
+%   /sp-warp : the added width of the space character (never negative here)
+%   /ltr-warp: the added width of each letter (never negative here)
 
 (base.ps) using
 
@@ -82,7 +82,7 @@
 % bool sp-warp ltr-warp
 % The boolean states whether or not to go 'back one space'.
 % Helper proc. Assumes limit-x, [stats], SPACE. 
-% Appends data for a line to the [stats].
+% Appends data for a segment to the [stats].
 /more-stats {
   /ltr-warp defi
   /sp-warp defi
